@@ -83,6 +83,70 @@ public class Sesion implements Serializable {
         this.productosVendidos = productosVendidos;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getFechaApertura() {
+        return fechaApertura;
+    }
+
+    public void setFechaApertura(LocalDateTime fechaApertura) {
+        this.fechaApertura = fechaApertura;
+    }
+
+    public LocalDateTime getFechaCierre() {
+        return fechaCierre;
+    }
+
+    public void setFechaCierre(LocalDateTime fechaCierre) {
+        this.fechaCierre = fechaCierre;
+    }
+
+    public double getDineroGenerado() {
+        return dineroGenerado;
+    }
+
+    public void setDineroGenerado(double dineroGenerado) {
+        this.dineroGenerado = dineroGenerado;
+    }
+
+    public int getVentasTotales() {
+        return ventasTotales;
+    }
+
+    public void setVentasTotales(int ventasTotales) {
+        this.ventasTotales = ventasTotales;
+    }
+
+    public Caja getCaja() {
+        return caja;
+    }
+
+    public void setCaja(Caja caja) {
+        this.caja = caja;
+    }
+
+    public Empleado getEmpleado() {
+        return empleado;
+    }
+
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+
+    public List<Venta> getProductosVendidos() {
+        return productosVendidos;
+    }
+
+    public void setProductosVendidos(List<Venta> productosVendidos) {
+        this.productosVendidos = productosVendidos;
+    }
+
     @Override
     public String toString() {
         return "Sesion{" + "id=" + id + ", fechaApertura=" + fechaApertura + ", fechaCierre=" + fechaCierre + ", dineroGenerado=" + dineroGenerado + ", ventasTotales=" + ventasTotales + ", caja=" + caja + ", empleado=" + empleado + ", productosVendidos=" + productosVendidos + '}';

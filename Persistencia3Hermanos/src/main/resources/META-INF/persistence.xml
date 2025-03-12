@@ -7,7 +7,19 @@
       <property name="javax.persistence.jdbc.user" value="root"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value="1234"/>
-      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
+    <class>entidades.Usuario</class>
+    <class>entidades.Empleado</class>
+    <class>entidades.Administrador</class>
+    <class>entidades.Caja</class>
+    <class>entidades.CategoriaProducto</class>
+    <class>entidades.Compra</class>
+    <class>entidades.Producto</class>
+    <class>entidades.ProductoTransaccion</class>
+    <class>entidades.Proveedor</class>
+    <class>entidades.Sesion</class>
+    <class>entidades.Venta</class>
+    <class>entidades.Transaccion</class>
   </persistence-unit>
 </persistence>

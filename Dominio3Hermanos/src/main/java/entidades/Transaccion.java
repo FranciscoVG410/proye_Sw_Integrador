@@ -27,7 +27,7 @@ import javax.persistence.Table;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "Transacciones")
 public class Transaccion implements Serializable {
@@ -35,11 +35,11 @@ public class Transaccion implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "transaccion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductoTransaccion> productos;
-
     @Column(name = "total", nullable = false)
     private Double total;
+    
+    @OneToMany(mappedBy = "transaccion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductoTransaccion> productos;
 
     public Transaccion() {
     }

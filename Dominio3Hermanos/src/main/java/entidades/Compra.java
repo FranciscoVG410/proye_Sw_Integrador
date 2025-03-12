@@ -3,6 +3,9 @@ package entidades;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -19,6 +22,10 @@ import javax.persistence.ManyToOne;
 @DiscriminatorValue("Compras")
 public class Compra extends Transaccion {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
     @ManyToOne
     @JoinColumn(name = "proveedor_id", nullable = false)
     private Proveedor proveedor;
@@ -30,6 +37,14 @@ public class Compra extends Transaccion {
         this.proveedor = proveedor;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public Proveedor getProveedor() {
         return proveedor;
     }
