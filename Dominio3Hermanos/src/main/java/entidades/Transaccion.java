@@ -38,6 +38,9 @@ public class Transaccion implements Serializable {
     @Column(name = "total", nullable = false)
     private Double total;
     
+    @Column(name = "estado", nullable = false)
+    private boolean estado = true;
+    
     @OneToMany(mappedBy = "transaccion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductoTransaccion> productos;
 
@@ -48,11 +51,13 @@ public class Transaccion implements Serializable {
         this.id = id;
         this.productos = productos;
         this.total = total;
+        this.estado = true;
     }
 
     public Transaccion(List<ProductoTransaccion> productos, Double total) {
         this.productos = productos;
         this.total = total;
+        this.estado = true;
     }
 
     public Long getId() {
@@ -78,10 +83,18 @@ public class Transaccion implements Serializable {
     public void setTotal(Double total) {
         this.total = total;
     }
+    
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
+    }
 
     @Override
     public String toString() {
-        return "Transaccion{" + "id=" + id + ", productos=" + productos + ", total=" + total + '}';
+        return "Transaccion{" + "id=" + id + ", productos=" + productos + ", total=" + total + ", estado=" + estado + '}';
     }
     
 }
