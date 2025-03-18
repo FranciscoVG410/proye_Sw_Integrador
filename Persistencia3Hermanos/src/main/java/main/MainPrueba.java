@@ -122,7 +122,8 @@ public class MainPrueba {
             System.out.println("Producto agregado a la compra: " + producto.getNombre());
 
             Venta venta = new Venta();
-            venta.setTotal(205.0); 
+            venta.setTotal(205.0);
+            venta.setSesion(sesion);
             ventaDAO.guardar(venta);
             System.out.println("Venta registrada con total: " + venta.getTotal());
 
