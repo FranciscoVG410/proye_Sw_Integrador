@@ -1,16 +1,39 @@
 package presentacion;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Bell
  */
 public class JVenta extends javax.swing.JFrame {
 
+    // Hora
+    DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+    Date date = new Date();
+    // Fecha
+    GregorianCalendar calendario = new GregorianCalendar();
+    SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+    String fechaHoy = formatoFecha.format(calendario.getTime());
+
     /**
      * Creates new form JVenta
      */
     public JVenta() {
         initComponents();
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
+        this.setSize(1320, 760);
+        txtFecha.setText(fechaHoy);
+        txtHora.setText(dateFormat.format(date));
+        // Este va a actualizarse tambien durante
+        txtVentasHoy.setText("0");
+        // Aqui el usuario debe ser en base al Login
+        txtUsuario.setText("Kat");
     }
 
     /**
@@ -57,7 +80,7 @@ public class JVenta extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         btnMas = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnMenos = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         txtTotalPagar = new javax.swing.JLabel();
@@ -128,15 +151,12 @@ public class JVenta extends javax.swing.JFrame {
         comboBoxProducto.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
         comboBoxProducto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gamesa", "Sabritas", "Barcel", "Ricolino", "Coca cola" }));
         comboBoxProducto.setBorder(null);
-        comboBoxProducto.setLightWeightPopupEnabled(false);
-        comboBoxProducto.setOpaque(true);
 
         textInformacionProducto.setEditable(false);
         textInformacionProducto.setBackground(new java.awt.Color(240, 248, 255));
         textInformacionProducto.setColumns(5);
         textInformacionProducto.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
         textInformacionProducto.setRows(5);
-        textInformacionProducto.setText("Información del Producto");
         textInformacionProducto.setBorder(null);
         jScrollPane1.setViewportView(textInformacionProducto);
 
@@ -152,7 +172,7 @@ public class JVenta extends javax.swing.JFrame {
         jLabel5.setText("Precio:");
 
         txtPrecio.setFont(new java.awt.Font("Arial", 0, 40)); // NOI18N
-        txtPrecio.setText("$40.00");
+        txtPrecio.setText("$0.00");
 
         btnLimpiarProducto.setBackground(new java.awt.Color(247, 94, 94));
         btnLimpiarProducto.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
@@ -170,6 +190,11 @@ public class JVenta extends javax.swing.JFrame {
         btnAgregarProducto.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
         btnAgregarProducto.setText("Agregar");
         btnAgregarProducto.setBorderPainted(false);
+        btnAgregarProducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarProductoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -284,8 +309,8 @@ public class JVenta extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(75, 75, 75)
+                .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtHora)
@@ -311,7 +336,7 @@ public class JVenta extends javax.swing.JFrame {
         jLabel8.setText("Ventas de hoy:");
 
         txtVentasHoy.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        txtVentasHoy.setText("10");
+        txtVentasHoy.setText("0");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -366,10 +391,15 @@ public class JVenta extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(247, 94, 94));
-        jButton2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jButton2.setText("-");
-        jButton2.setBorderPainted(false);
+        btnMenos.setBackground(new java.awt.Color(247, 94, 94));
+        btnMenos.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnMenos.setText("-");
+        btnMenos.setBorderPainted(false);
+        btnMenos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -398,7 +428,7 @@ public class JVenta extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addComponent(btnMas)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
+                .addComponent(btnMenos)
                 .addGap(30, 30, 30))
         );
         jPanel6Layout.setVerticalGroup(
@@ -417,7 +447,7 @@ public class JVenta extends javax.swing.JFrame {
                     .addComponent(jLabel17)
                     .addComponent(jLabel18)
                     .addComponent(btnMas)
-                    .addComponent(jButton2))
+                    .addComponent(btnMenos))
                 .addContainerGap(375, Short.MAX_VALUE))
         );
 
@@ -459,6 +489,11 @@ public class JVenta extends javax.swing.JFrame {
         campoTxtPagar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 campoTxtPagarActionPerformed(evt);
+            }
+        });
+        campoTxtPagar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                campoTxtPagarKeyTyped(evt);
             }
         });
 
@@ -605,44 +640,90 @@ public class JVenta extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnProveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProveedoresActionPerformed
-        // TODO add your handling code here:
+//        JProveedores jProveedores = new JProveedores();
+//        jProveedores.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnProveedoresActionPerformed
 
     private void btnRegEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegEmpleadoActionPerformed
-        // TODO add your handling code here:
+//        JRegistrarEmpleado jRegistrarEmpleado = new JRegistrarEmpleado();
+//        jRegistrarEmpleado.setVisible(true)
+        this.dispose();
     }//GEN-LAST:event_btnRegEmpleadoActionPerformed
 
     private void btnVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVentasActionPerformed
-        // TODO add your handling code here:
+        JVenta jVenta = new JVenta();
+        jVenta.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnVentasActionPerformed
 
     private void btnComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprasActionPerformed
-        // TODO add your handling code here:
+//        JCompras jCompras = new JCompras();
+//        jCompras.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnComprasActionPerformed
 
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        // TODO add your handling code here:
+//        JReportes jReportes = new JReportes();
+//        jReportes.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnReportesActionPerformed
 
     private void btnLimpiarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarProductoActionPerformed
-        // TODO add your handling code here:
+        comboBoxProducto.setSelectedIndex(0);
+        textInformacionProducto.setText("Información del Producto");
+        comboBoxCantidad.setSelectedIndex(0);
+        txtPrecio.setText("$" + "0.00");
     }//GEN-LAST:event_btnLimpiarProductoActionPerformed
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        // TODO add your handling code here:
+        if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
+        } else {
+
+            // Despues de realizar la venta se limpia la pantalla
+            JVenta jVenta = new JVenta();
+            jVenta.setVisible(true);
+            this.dispose();
+        }
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnLimpiarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarVentaActionPerformed
-        // TODO add your handling code here:
+        // Se supone que la ventana estara vacia, entonces en esto no habra problema
+        JVenta jVenta = new JVenta();
+        jVenta.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnLimpiarVentaActionPerformed
 
     private void campoTxtPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTxtPagarActionPerformed
-        // TODO add your handling code here:
+        if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
+        } else {
+            // Guardar los datos de la transaccion
+            // Calcular el cambio
+            txtCambio.setText("$ " + "0.00"); // Se agregara el cambio
+        }
     }//GEN-LAST:event_campoTxtPagarActionPerformed
 
     private void btnMasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMasActionPerformed
-        // TODO add your handling code here:
+        // Agrega 1 de la cantidad de producto seleccionado
     }//GEN-LAST:event_btnMasActionPerformed
+
+    private void btnAgregarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarProductoActionPerformed
+        // Agrega el producto a la lista para venderlo
+    }//GEN-LAST:event_btnAgregarProductoActionPerformed
+
+    private void btnMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenosActionPerformed
+        // Elimina 1 de la cantidad de producto seleccionado
+    }//GEN-LAST:event_btnMenosActionPerformed
+
+    private void campoTxtPagarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoTxtPagarKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()) && evt.getKeyChar() != '.') {
+            evt.consume();
+        } else if (evt.getKeyChar() == '.' && campoTxtPagar.getText().contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_campoTxtPagarKeyTyped
 
     /**
      * @param args the command line arguments
@@ -685,6 +766,7 @@ public class JVenta extends javax.swing.JFrame {
     private javax.swing.JButton btnLimpiarProducto;
     private javax.swing.JButton btnLimpiarVenta;
     private javax.swing.JButton btnMas;
+    private javax.swing.JButton btnMenos;
     private javax.swing.JButton btnProducto;
     private javax.swing.JButton btnProveedores;
     private javax.swing.JButton btnRegEmpleado;
@@ -695,7 +777,6 @@ public class JVenta extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboBoxCantidad;
     private javax.swing.JComboBox<String> comboBoxProducto;
     private javax.swing.JPanel fondo;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
