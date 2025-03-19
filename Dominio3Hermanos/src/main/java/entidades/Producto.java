@@ -23,9 +23,17 @@ import javax.persistence.Table;
  * @author Manuel Octavio Perez Dominguez 00000247439
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
+
+/**
+ * Tabla Productos
+ */
 @Entity
 @Table(name = "Productos")
 public class Producto implements Serializable {
+
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -54,9 +62,15 @@ public class Producto implements Serializable {
     )
     private List<Proveedor> proveedores;
 
+    /**
+     * Constructor vacio
+     */
     public Producto() {
     }
 
+    /**
+     * Constructores
+     */
     public Producto(Long id, String nombre, Double precioVenta, Integer cantidad, String marca, CategoriaProducto categoria) {
         this.id = id;
         this.nombre = nombre;
@@ -74,6 +88,9 @@ public class Producto implements Serializable {
         this.categoria = categoria;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -122,6 +139,9 @@ public class Producto implements Serializable {
         this.categoria = categoria;
     }
 
+    /**
+     * String Producto
+     */
     @Override
     public String toString() {
         return "Producto{" + "id=" + id + ", nombre=" + nombre + ", precioVenta=" + precioVenta + ", cantidad=" + cantidad + ", marca=" + marca + ", categoria=" + categoria + '}';

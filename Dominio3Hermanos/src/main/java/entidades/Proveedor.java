@@ -20,10 +20,17 @@ import javax.persistence.Table;
  * @author Kathya Margarita Cordova Soto 00000246801
  * @author Manuel Octavio Perez Dominguez 00000247439
  */
+
+/**
+ * Tabla Proveedor
+ */
 @Entity
 @Table(name = "Proveedores")
 public class Proveedor implements Serializable {
 
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,9 +47,15 @@ public class Proveedor implements Serializable {
     @ManyToMany(mappedBy = "proveedores")
     private List<Producto> productos;
 
+    /**
+     * Constructor vacio
+     */
     public Proveedor() {
     }
 
+    /**
+     * Constructores
+     */
     public Proveedor(Long id, String nombre, String telefono, List<Producto> productos) {
         this.id = id;
         this.nombre = nombre;
@@ -56,6 +69,9 @@ public class Proveedor implements Serializable {
         this.productos = productos;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -88,6 +104,9 @@ public class Proveedor implements Serializable {
         this.productos = productos;
     }
 
+    /**
+     * String Proveedor
+     */
     @Override
     public String toString() {
         return "Proveedor{" + "id=" + id + ", nombre=" + nombre + ", telefono=" + telefono + ", productos=" + productos + '}';

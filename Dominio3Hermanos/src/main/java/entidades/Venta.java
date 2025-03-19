@@ -18,10 +18,17 @@ import javax.persistence.ManyToOne;
  * @author Kathya Margarita Cordova Soto 00000246801
  * @author Manuel Octavio Perez Dominguez 00000247439
  */
+
+/**
+ * Tabla Venta hereda de Transaccion
+ */
 @Entity
 @DiscriminatorValue("Ventas")
 public class Venta extends Transaccion {
 
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,9 +37,15 @@ public class Venta extends Transaccion {
     @JoinColumn(name = "sesion_id")
     private Sesion sesion;
 
+    /**
+     * Constructor vacio
+     */
     public Venta() {
     }
 
+    /**
+     * Constructores
+     */
     public Venta(Long id, List<ProductoTransaccion> productos, Double total) {
         super(productos, total);
         this.id = id;
@@ -42,6 +55,9 @@ public class Venta extends Transaccion {
         super(productos, total);
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -58,6 +74,9 @@ public class Venta extends Transaccion {
         this.sesion = sesion;
     }
 
+    /**
+     * String Venta
+     */
     @Override
     public String toString() {
         return "Venta{" + super.toString() +  "id=" + id + ", sesion=" + sesion + '}';

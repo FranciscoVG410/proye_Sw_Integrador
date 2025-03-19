@@ -26,11 +26,19 @@ import javax.persistence.Table;
  * @author Manuel Octavio Perez Dominguez 00000247439
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
+
+/**
+ * Tabla Transaccion
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "Transacciones")
 public class Transaccion implements Serializable {
+
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,9 +52,15 @@ public class Transaccion implements Serializable {
     @OneToMany(mappedBy = "transaccion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductoTransaccion> productos;
 
+    /**
+     * Constructor vacio
+     */
     public Transaccion() {
     }
 
+    /**
+     * Constructores
+     */
     public Transaccion(Long id, List<ProductoTransaccion> productos, Double total) {
         this.id = id;
         this.productos = productos;
@@ -60,6 +74,9 @@ public class Transaccion implements Serializable {
         this.estado = true;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -92,6 +109,9 @@ public class Transaccion implements Serializable {
         this.estado = estado;
     }
 
+    /**
+     * String Transaccion
+     */
     @Override
     public String toString() {
         return "Transaccion{" + "id=" + id + ", productos=" + productos + ", total=" + total + ", estado=" + estado + '}';
