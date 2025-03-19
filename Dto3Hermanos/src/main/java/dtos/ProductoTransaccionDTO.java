@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class ProductoTransaccionDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private Long productoId;
     private Long transaccionId;
@@ -20,9 +23,21 @@ public class ProductoTransaccionDTO {
     private Integer cantidad;
     private LocalDateTime fechaHora;
 
+    /**
+     * Constructor vacio
+     */
     public ProductoTransaccionDTO() {
     }
 
+    /**
+     * Constructores
+     * @param id
+     * @param productoId
+     * @param transaccionId
+     * @param precio
+     * @param cantidad
+     * @param fechaHora
+     */
     public ProductoTransaccionDTO(Long id, Long productoId, Long transaccionId, Double precio, Integer cantidad, LocalDateTime fechaHora) {
         this.id = id;
         this.productoId = productoId;
@@ -40,6 +55,9 @@ public class ProductoTransaccionDTO {
         this.fechaHora = fechaHora;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -88,6 +106,9 @@ public class ProductoTransaccionDTO {
         this.fechaHora = fechaHora;
     }
 
+    /**
+     * String ProductoTransaccionDTO
+     */
     @Override
     public String toString() {
         return "ProductoTransaccionDTO{" + "id=" + id + ", productoId=" + productoId + ", transaccionId=" + transaccionId + ", precio=" + precio + ", cantidad=" + cantidad + ", fechaHora=" + fechaHora + '}';

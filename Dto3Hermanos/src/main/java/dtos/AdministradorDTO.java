@@ -12,9 +12,15 @@ package dtos;
  */
 public class AdministradorDTO extends UsuarioDTO {
 
+    /**
+     * Constructor vacio
+     */
     public AdministradorDTO() {
     }
 
+    /**
+     * Constructores
+     */
     public AdministradorDTO(Long id, String nombre, String apellidoPaterno, String apellidoMaterno) {
         super(id, nombre, apellidoPaterno, apellidoMaterno);
     }

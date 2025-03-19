@@ -11,13 +11,25 @@ package dtos;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class CategoriaProductoDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private String nombre;
     private String descripcion;
 
+    /**
+     * Constructor vacio
+     */
     public CategoriaProductoDTO() {
     }
 
+    /**
+     * Constyrtuctores
+     * @param id
+     * @param nombre
+     * @param descripcion
+     */
     public CategoriaProductoDTO(Long id, String nombre, String descripcion) {
         this.id = id;
         this.nombre = nombre;
@@ -29,6 +41,9 @@ public class CategoriaProductoDTO {
         this.descripcion = descripcion;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -53,6 +68,9 @@ public class CategoriaProductoDTO {
         this.descripcion = descripcion;
     }
 
+    /**
+     * String CategoriaProductoDTO
+     */
     @Override
     public String toString() {
         return "CategoriaProductoDTO{" + "id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + '}';

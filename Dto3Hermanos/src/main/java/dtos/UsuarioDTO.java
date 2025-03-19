@@ -11,14 +11,27 @@ package dtos;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class UsuarioDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
 
+    /**
+     * Constructor vacio
+     */
     public UsuarioDTO() {
     }    
     
+    /**
+     * Constructores
+     * @param id
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     */
     public UsuarioDTO(Long id, String nombre, String apellidoPaterno, String apellidoMaterno) {
         this.id = id;
         this.nombre = nombre;
@@ -32,6 +45,9 @@ public class UsuarioDTO {
         this.apellidoMaterno = apellidoMaterno;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -64,6 +80,9 @@ public class UsuarioDTO {
         this.apellidoMaterno = apellidoMaterno;
     }
 
+    /**
+     * String UsuarioDTO
+     */
     @Override
     public String toString() {
         return "UsuarioDTO{" + "id=" + id + ", nombre=" + nombre + ", apellidoPaterno=" + apellidoPaterno + ", apellidoMaterno=" + apellidoMaterno + '}';

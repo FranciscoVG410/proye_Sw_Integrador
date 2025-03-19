@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class SesionDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private LocalDateTime fechaApertura;
     private LocalDateTime fechaCierre;
@@ -21,9 +24,22 @@ public class SesionDTO {
     private Long cajaId;
     private Long empleadoId;
 
+    /**
+     * Constructor vacio
+     */
     public SesionDTO() {
     }
 
+    /**
+     * Constructores
+     * @param id
+     * @param fechaApertura
+     * @param fechaCierre
+     * @param dineroGenerado
+     * @param ventasTotales
+     * @param cajaId
+     * @param empleadoId
+     */
     public SesionDTO(Long id, LocalDateTime fechaApertura, LocalDateTime fechaCierre, double dineroGenerado, int ventasTotales, Long cajaId, Long empleadoId) {
         this.id = id;
         this.fechaApertura = fechaApertura;
@@ -43,6 +59,9 @@ public class SesionDTO {
         this.empleadoId = empleadoId;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -99,6 +118,9 @@ public class SesionDTO {
         this.empleadoId = empleadoId;
     }
 
+    /**
+     * String SesionDTO
+     */
     @Override
     public String toString() {
         return "SesionDTO{" + "id=" + id + ", fechaApertura=" + fechaApertura + ", fechaCierre=" + fechaCierre + ", dineroGenerado=" + dineroGenerado + ", ventasTotales=" + ventasTotales + ", cajaId=" + cajaId + ", empleadoId=" + empleadoId + '}';

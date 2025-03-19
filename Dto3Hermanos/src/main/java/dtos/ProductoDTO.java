@@ -11,6 +11,9 @@ package dtos;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class ProductoDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private String nombre;
     private Double precioVenta;
@@ -18,9 +21,21 @@ public class ProductoDTO {
     private String marca;
     private Long categoriaId;
 
+    /**
+     * Constructor vacio
+     */
     public ProductoDTO() {
     }
 
+    /**
+     * Constructores
+     * @param id
+     * @param nombre
+     * @param precioVenta
+     * @param cantidad
+     * @param marca
+     * @param categoriaId
+     */
     public ProductoDTO(Long id, String nombre, Double precioVenta, Integer cantidad, String marca, Long categoriaId) {
         this.id = id;
         this.nombre = nombre;
@@ -38,6 +53,9 @@ public class ProductoDTO {
         this.categoriaId = categoriaId;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -86,6 +104,9 @@ public class ProductoDTO {
         this.categoriaId = categoriaId;
     }
 
+    /**
+     * String ProductoDTO
+     */
     @Override
     public String toString() {
         return "ProductoDTO{" + "id=" + id + ", nombre=" + nombre + ", precioVenta=" + precioVenta + ", cantidad=" + cantidad + ", marca=" + marca + ", categoriaId=" + categoriaId + '}';

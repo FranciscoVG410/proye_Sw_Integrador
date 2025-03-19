@@ -11,13 +11,25 @@ package dtos;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class CajaDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private Double dineroActual;
     private String estado;
 
+    /**
+     * Constructor vacio
+     */
     public CajaDTO() {
     }
 
+    /**
+     * Constructores
+     * @param id
+     * @param dineroActual
+     * @param estado
+     */
     public CajaDTO(Long id, Double dineroActual, String estado) {
         this.id = id;
         this.dineroActual = dineroActual;
@@ -29,6 +41,9 @@ public class CajaDTO {
         this.estado = estado;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -53,6 +68,9 @@ public class CajaDTO {
         this.estado = estado;
     }
 
+    /**
+     * String CajaDTO
+     */
     @Override
     public String toString() {
         return "CajaDTO{" + "id=" + id + ", dineroActual=" + dineroActual + ", estado=" + estado + '}';

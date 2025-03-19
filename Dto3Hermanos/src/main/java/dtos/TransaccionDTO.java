@@ -11,13 +11,25 @@ package dtos;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class TransaccionDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private Double total;
     private boolean estado;
 
+    /**
+     * Constructor vacio
+     */
     public TransaccionDTO() {
     }
     
+    /**
+     * Constructores
+     * @param id
+     * @param total
+     * @param estado
+     */
     public TransaccionDTO(Long id, Double total, boolean estado) {
         this.id = id;
         this.total = total;
@@ -29,6 +41,9 @@ public class TransaccionDTO {
         this.estado = estado;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -53,6 +68,9 @@ public class TransaccionDTO {
         this.estado = estado;
     }
 
+    /**
+     * String TransaccionDTO
+     */
     @Override
     public String toString() {
         return "TransaccionDTO{" + "id=" + id + ", total=" + total + ", estado=" + estado + '}';

@@ -13,9 +13,19 @@ package dtos;
 public class CompraDTO extends TransaccionDTO{
     private Long proveedorId;
 
+    /**
+     * Constructor vacio
+     */
     public CompraDTO() {
     }
 
+    /**
+     * Constructores
+     * @param proveedorId
+     * @param id
+     * @param total
+     * @param estado
+     */
     public CompraDTO(Long proveedorId, Long id, Double total, boolean estado) {
         super(id, total, estado);
         this.proveedorId = proveedorId;
@@ -26,6 +36,9 @@ public class CompraDTO extends TransaccionDTO{
         this.proveedorId = proveedorId;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getProveedorId() {
         return proveedorId;
     }
@@ -34,6 +47,9 @@ public class CompraDTO extends TransaccionDTO{
         this.proveedorId = proveedorId;
     }
 
+    /**
+     * String CompraDTO
+     */
     @Override
     public String toString() {
         return "CompraDTO{" + super.toString() + "proveedorId=" + proveedorId + '}';

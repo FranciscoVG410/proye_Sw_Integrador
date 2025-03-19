@@ -11,13 +11,25 @@ package dtos;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class ProveedorDTO {
+    /**
+     * Atributos
+     */
     private Long id;
     private String nombre;
     private String telefono;
 
+    /**
+     * Constructor vacio
+     */
     public ProveedorDTO() {
     }
 
+    /**
+     * Constructores
+     * @param id
+     * @param nombre
+     * @param telefono
+     */
     public ProveedorDTO(Long id, String nombre, String telefono) {
         this.id = id;
         this.nombre = nombre;
@@ -29,6 +41,9 @@ public class ProveedorDTO {
         this.telefono = telefono;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -53,6 +68,9 @@ public class ProveedorDTO {
         this.telefono = telefono;
     }
 
+    /**
+     * String ProveedorDTO
+     */
     @Override
     public String toString() {
         return "ProveedorDTO{" + "id=" + id + ", nombre=" + nombre + ", telefono=" + telefono + '}';

@@ -12,9 +12,19 @@ package dtos;
  */
 public class EmpleadoDTO extends UsuarioDTO{
 
+    /**
+     * Constructor vacio
+     */
     public EmpleadoDTO() {
     }
 
+    /**
+     * Constructores
+     * @param id
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     */
     public EmpleadoDTO(Long id, String nombre, String apellidoPaterno, String apellidoMaterno) {
         super(id, nombre, apellidoPaterno, apellidoMaterno);
     }
