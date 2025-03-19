@@ -24,6 +24,9 @@ import javax.persistence.Table;
 @Table(name = "CategoriasProducto")
 public class CategoriaProducto implements Serializable {
     
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,9 +40,15 @@ public class CategoriaProducto implements Serializable {
     @OneToMany(mappedBy = "categoria")
     private List<Producto> productos;
 
+    /**
+     * Constructor vacio
+     */
     public CategoriaProducto() {
     }
 
+    /**
+     * Constructores
+     */
     public CategoriaProducto(Long id, String nombre, String descripcion, List<Producto> productos) {
         this.id = id;
         this.nombre = nombre;
@@ -53,6 +62,9 @@ public class CategoriaProducto implements Serializable {
         this.productos = productos;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -85,6 +97,9 @@ public class CategoriaProducto implements Serializable {
         this.productos = productos;
     }
 
+    /**
+     * String CategoriaProducto
+     */
     @Override
     public String toString() {
         return "CategoriaProducto{" + "id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", productos=" + productos + '}';

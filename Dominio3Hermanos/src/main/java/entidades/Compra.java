@@ -18,10 +18,17 @@ import javax.persistence.ManyToOne;
  * @author Kathya Margarita Cordova Soto 00000246801
  * @author Manuel Octavio Perez Dominguez 00000247439
  */
+
+/**
+ * Compra hereda de Transaccion
+ */
 @Entity
 @DiscriminatorValue("Compras")
 public class Compra extends Transaccion {
     
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,13 +37,22 @@ public class Compra extends Transaccion {
     @JoinColumn(name = "proveedor_id", nullable = false)
     private Proveedor proveedor;
     
+    /**
+     * Constructor vacio
+     */
     public Compra() {}
 
+    /**
+     * Constructor
+     */
     public Compra(Proveedor proveedor, List<ProductoTransaccion> productos, Double total) {
         super(productos, total);
         this.proveedor = proveedor;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -53,6 +69,9 @@ public class Compra extends Transaccion {
         this.proveedor = proveedor;
     }
 
+    /**
+     * String Compra
+     */
     @Override
     public String toString() {
         return "Compra{"+ super.toString() + "proveedor=" + proveedor + '}';

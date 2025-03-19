@@ -22,12 +22,19 @@ import javax.persistence.Table;
  * @author Manuel Octavio Perez Dominguez 00000247439
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
+
+/**
+ * Tabla Usuario
+ */
 @Entity
 @Table(name = "Usuarios")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_usuario", discriminatorType = DiscriminatorType.STRING)
 public class Usuario implements Serializable {
 
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,9 +51,15 @@ public class Usuario implements Serializable {
     @Column(name = "contrasenia", nullable = false)
     private String contrasenia;
 
+    /**
+     * Constructor vacio
+     */
     public Usuario() {
     }
 
+    /**
+     * Constructores
+     */
     public Usuario(Long id, String nombre, String apellidoPaterno, String apellidoMaterno, String contrasenia) {
         this.id = id;
         this.nombre = nombre;
@@ -62,6 +75,9 @@ public class Usuario implements Serializable {
         this.contrasenia = contrasenia;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -102,6 +118,9 @@ public class Usuario implements Serializable {
         this.contrasenia = contrasenia;
     }
 
+    /**
+     * String Usuario
+     */
     @Override
     public String toString() {
         return "Usuario{" + "id=" + id + ", nombre=" + nombre + ", apellidoPaterno=" + apellidoPaterno + ", apellidoMaterno=" + apellidoMaterno + ", contrasenia=" + contrasenia + '}';

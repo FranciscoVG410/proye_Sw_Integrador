@@ -13,17 +13,30 @@ import javax.persistence.Entity;
  * @author Manuel Octavio Perez Dominguez 00000247439
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
+
+/**
+ * Empleado hereda de Usuario
+ */
 @Entity
 @DiscriminatorValue("Empleado")
 public class Empleado extends Usuario {
 
+    /**
+     * Constructor vacio
+     */
     public Empleado() {
     }
 
+    /**
+     * Constructor
+     */
     public Empleado(String nombre, String apellidoPaterno, String apellidoMaterno, String contrasenia) {
         super(nombre, apellidoPaterno, apellidoMaterno, contrasenia);
     }
 
+    /**
+     * String Empleado
+     */
     @Override
     public String toString() {
         return "Empleado{" + super.toString() + '}';

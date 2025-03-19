@@ -25,10 +25,17 @@ import javax.persistence.Table;
  * @author Manuel Octavio Perez Dominguez 00000247439
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
+
+/**
+ * Tabla Sesion
+ */
 @Entity
 @Table(name = "Sesiones")
 public class Sesion implements Serializable {
     
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,9 +63,15 @@ public class Sesion implements Serializable {
     @OneToMany(mappedBy = "sesion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Venta> productosVendidos;
 
+    /**
+     * Constructor vacio
+     */
     public Sesion() {
     }
 
+    /**
+     * Constructores
+     */
     public Sesion(Long id, LocalDateTime fechaApertura, LocalDateTime fechaCierre, Caja caja, Empleado empleado) {
         this.id = id;
         this.fechaApertura = fechaApertura;
@@ -83,6 +96,9 @@ public class Sesion implements Serializable {
         this.productosVendidos = productosVendidos;
     }
 
+    /**
+     * Setters y Getters
+     */
     public Long getId() {
         return id;
     }
@@ -147,6 +163,9 @@ public class Sesion implements Serializable {
         this.productosVendidos = productosVendidos;
     }
 
+    /**
+     * String Sesion
+     */
     @Override
     public String toString() {
         return "Sesion{" + "id=" + id + ", fechaApertura=" + fechaApertura + ", fechaCierre=" + fechaCierre + ", dineroGenerado=" + dineroGenerado + ", ventasTotales=" + ventasTotales + ", caja=" + caja + ", empleado=" + empleado + ", productosVendidos=" + productosVendidos + '}';

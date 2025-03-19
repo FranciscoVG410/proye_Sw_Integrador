@@ -22,6 +22,9 @@ import javax.persistence.Table;
 @Table(name = "Cajas")
 public class Caja implements Serializable {
     
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,9 +35,15 @@ public class Caja implements Serializable {
     @Column(name = "estado", nullable = false)
     private String estado;
 
+    /**
+     * Constructor vacio
+     */
     public Caja() {
     }
 
+    /**
+     * Constructores
+     */
     public Caja(Long id, Double dineroActual, String estado) {
         this.id = id;
         this.dineroActual = dineroActual;
@@ -70,6 +79,9 @@ public class Caja implements Serializable {
         this.estado = estado;
     }
 
+    /**
+     * String Caja
+     */
     @Override
     public String toString() {
         return "Caja{" + "id=" + id + ", dineroActual=" + dineroActual + ", estado=" + estado + '}';
