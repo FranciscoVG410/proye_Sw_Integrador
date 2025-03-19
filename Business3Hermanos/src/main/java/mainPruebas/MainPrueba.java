@@ -77,5 +77,6 @@ public class MainPrueba {
         } catch (PersistenciaException e) {
             System.err.println("Error en la venta: " + e.getMessage());
         }
+        
     }
 }

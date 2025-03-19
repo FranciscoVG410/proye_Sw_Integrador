@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
+import ventaBO.VentaBO;
 
 /**
  *
@@ -12,6 +13,8 @@ import javax.swing.JOptionPane;
  */
 public class JVenta extends javax.swing.JFrame {
 
+    private VentaBO ventaBO = new VentaBO();
+    
     // Hora
     DateFormat dateFormat = new SimpleDateFormat("HH:mm");
     Date date = new Date();
@@ -680,8 +683,7 @@ public class JVenta extends javax.swing.JFrame {
         if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
         } else {
-
-            // Despues de realizar la venta se limpia la pantalla
+            //ventaBO.vender(List<Productos>, SOMEBITS, sesion);
             JVenta jVenta = new JVenta();
             jVenta.setVisible(true);
             this.dispose();

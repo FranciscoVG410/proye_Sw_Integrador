@@ -78,12 +78,11 @@ public class VentaBO {
      * @param productosDTO lista de productos a vender (cada uno con la cantidad a comprar)
      * @param montoCliente monto entregado por el cliente
      * @param sesion la sesión actual a la que se asocia la venta
-     * @return el cambio que se debe entregar al cliente
      * @throws PersistenciaException si ocurre algún error en la persistencia o validación
      */
     public void vender(List<ProductoDTO> productosDTO, double montoCliente, Sesion sesion) throws PersistenciaException {
         double totalVenta = calcularTotalVenta(productosDTO);
-        
+        // primero checar si hay suficiente y luego persisiteir la venta
         Venta venta = new Venta();
         venta.setSesion(sesion);
         venta.setTotal(totalVenta);
@@ -92,7 +91,7 @@ public class VentaBO {
         for (ProductoDTO dto : productosDTO) {
             Producto producto = productoDAO.encontrarPorId(dto.getId());
             
-            int cantidadVenta = dto.getCantidadCompra();
+            int cantidadVenta = dto.getCantidadCompra(); //venta jajaj
             if (producto.getCantidad() < cantidadVenta) {
                 throw new PersistenciaException("Cantidad insuficiente para el producto: " + producto.getNombre());
             }
@@ -110,4 +109,6 @@ public class VentaBO {
             productoDAO.editar(producto);
         }
     }
+    
 }
+
