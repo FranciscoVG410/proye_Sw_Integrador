@@ -1,0 +1,12 @@
+dtos\AdministradorDTO.class
+dtos\EmpleadoDTO.class
+dtos\CajaDTO.class
+dtos\SesionDTO.class
+dtos\CategoriaProductoDTO.class
+dtos\ProductoTransaccionDTO.class
+dtos\VentaDTO.class
+dtos\CompraDTO.class
+dtos\UsuarioDTO.class
+dtos\ProductoDTO.class
+dtos\ProveedorDTO.class
+dtos\TransaccionDTO.class

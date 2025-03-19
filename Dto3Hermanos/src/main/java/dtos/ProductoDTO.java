@@ -20,6 +20,7 @@ public class ProductoDTO {
     private Integer cantidad;
     private String marca;
     private Long categoriaId;
+    private Integer cantidadCompra;
 
     /**
      * Constructor vacio
@@ -102,6 +103,14 @@ public class ProductoDTO {
 
     public void setCategoriaId(Long categoriaId) {
         this.categoriaId = categoriaId;
+    }
+
+    public Integer getCantidadCompra() {
+        return cantidadCompra;
+    }
+
+    public void setCantidadCompra(Integer cantidadCompra) {
+        this.cantidadCompra = cantidadCompra;
     }
 
     /**

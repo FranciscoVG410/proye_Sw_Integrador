@@ -3,10 +3,17 @@ package ventaBO;
 import conversores.ProductoConversor;
 import dtos.ProductoDTO;
 import entidades.Producto;
+import entidades.ProductoTransaccion;
+import entidades.Sesion;
+import entidades.Venta;
 import excepciones.PersistenciaException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import persistencia.ProductoDAO;
+import persistencia.ProductoTransaccionDAO;
+import persistencia.VentaDAO;
 
 /**
  *
@@ -21,7 +28,9 @@ import persistencia.ProductoDAO;
 public class VentaBO {
     //Inicializamos las DAO
     private ProductoDAO productoDAO = new ProductoDAO();
-
+    private VentaDAO ventaDAO = new VentaDAO();
+    private ProductoTransaccionDAO productoTransaccionDAO = new ProductoTransaccionDAO();
+    
     //Inicializamos los Conversores
     private ProductoConversor productoConversor = new ProductoConversor();
     
@@ -36,30 +45,69 @@ public class VentaBO {
         return productosDTO;
     }
 
-    public boolean verificarExistencia(ProductoDTO productoDTO) throws PersistenciaException{
+    public boolean verificarExistencia(ProductoDTO productoDTO) throws PersistenciaException {
         Producto producto = productoConversor.DtoAEntity(productoDTO);
-        
+
         Producto encontrarPorId = productoDAO.encontrarPorId(producto.getId());
-        
+
         return encontrarPorId != null;
     }
-    
-    public boolean verificarCantidad(ProductoDTO productoDTO, int cantidad) throws PersistenciaException{
+
+    public boolean verificarCantidad(ProductoDTO productoDTO, int cantidad) throws PersistenciaException {
         Producto producto = productoConversor.DtoAEntity(productoDTO);
-        
-        return producto.getCantidad()>= cantidad;
+
+        return producto.getCantidad() >= cantidad;
     }
-    
-    public double calcularCambio(double montoTotal, double montoCliente ){
+
+    public double calcularTotalVenta(List<ProductoDTO> productosDTO) {
+        double total = 0;
+        for (ProductoDTO prodcutoDto : productosDTO) {
+            total += prodcutoDto.getPrecioVenta() * prodcutoDto.getCantidadCompra();
+        }
+        return total;
+    }
+
+    public double calcularCambio(double montoTotal, double montoCliente) {
         return montoCliente - montoTotal;
     }
-    
-    public void vender(List<ProductoDTO> productosDTO) throws PersistenciaException{
-        List<Producto> productos = new ArrayList<>();
+
+    /**
+     * Registra una venta completa: se guarda la venta, se registra cada producto vendido
+     * como una transacción y se actualiza el stock de los productos.
+     *
+     * @param productosDTO lista de productos a vender (cada uno con la cantidad a comprar)
+     * @param montoCliente monto entregado por el cliente
+     * @param sesion la sesión actual a la que se asocia la venta
+     * @return el cambio que se debe entregar al cliente
+     * @throws PersistenciaException si ocurre algún error en la persistencia o validación
+     */
+    public void vender(List<ProductoDTO> productosDTO, double montoCliente, Sesion sesion) throws PersistenciaException {
+        double totalVenta = calcularTotalVenta(productosDTO);
         
-        for (ProductoDTO productoDTO : productosDTO) {
-            productos.add(productoConversor.DtoAEntity(productoDTO));
+        Venta venta = new Venta();
+        venta.setSesion(sesion);
+        venta.setTotal(totalVenta);
+        ventaDAO.guardar(venta);
+        
+        for (ProductoDTO dto : productosDTO) {
+            Producto producto = productoDAO.encontrarPorId(dto.getId());
+            
+            int cantidadVenta = dto.getCantidadCompra();
+            if (producto.getCantidad() < cantidadVenta) {
+                throw new PersistenciaException("Cantidad insuficiente para el producto: " + producto.getNombre());
+            }
+            
+            ProductoTransaccion pt = new ProductoTransaccion();
+            pt.setTransaccion(venta);
+            pt.setProducto(producto);
+            pt.setCantidad(cantidadVenta);
+            pt.setPrecio(producto.getPrecioVenta());
+            pt.setFechaHora(LocalDateTime.now());
+            
+            productoTransaccionDAO.guardar(pt);
+
+            producto.setCantidad(producto.getCantidad() - cantidadVenta);
+            productoDAO.editar(producto);
         }
-        
     }
 }
