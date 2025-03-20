@@ -1,45 +1,56 @@
 package presentacion;
 
+import dtos.ProductoDTO;
+import entidades.Sesion;
+import excepciones.PersistenciaException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-//import ventaBO.VentaBO;
+import ventaBO.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.SwingConstants;
+import javax.swing.table.TableModel;
 
 /**
  *
- * @author Bell
+ * @author Alejandro Gómez Vega 00000247313
+ * @author Francisco Valdez Gastelum 00000246904
+ * @author Kathya Margarita Cordova Soto 00000246801
+ * @author Manuel Octavio Perez Dominguez 00000247439
+ * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class JVenta extends javax.swing.JFrame {
 
-    // private VentaBO ventaBO = new VentaBO();
-    // Hora
-    DateFormat dateFormat = new SimpleDateFormat("HH:mm");
-    Date date = new Date();
-    // Fecha
-    GregorianCalendar calendario = new GregorianCalendar();
-    SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-    String fechaHoy = formatoFecha.format(calendario.getTime());
+    List<ProductoDTO> listaProd;
+    private VentaBO ventaBO = new VentaBO();
+    ProductoDTO productoDTO = new ProductoDTO();
+    Sesion sesion = new Sesion();
 
     /**
      * Creates new form JVenta
      */
     public JVenta() {
         initComponents();
+        sesion.setId(1L);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setSize(1320, 760);
-        txtFecha.setText(fechaHoy);
-        txtHora.setText(dateFormat.format(date));
-        // Este va a actualizarse tambien durante
-        txtVentasHoy.setText("0");
-        // Aqui el usuario debe ser en base al Login
+        this.listaProd = new ArrayList<>();
+        llenarMarcas();
+        ventasRealizadas();
+        // Usuario logeado
         txtUsuario.setText("Kat");
-        actualizarTabla();
+        fechaHora();
+        tablaInicio();
     }
 
     /**
@@ -58,14 +69,14 @@ public class JVenta extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         comboBoxProducto = new javax.swing.JComboBox<>();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        textInformacionProducto = new javax.swing.JTextArea();
         jLabel4 = new javax.swing.JLabel();
         comboBoxCantidad = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         txtPrecio = new javax.swing.JLabel();
         btnLimpiarProducto = new javax.swing.JButton();
         btnAgregarProducto = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listaProductos = new javax.swing.JList<>();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         txtUsuario = new javax.swing.JLabel();
@@ -153,30 +164,40 @@ public class JVenta extends javax.swing.JFrame {
 
         comboBoxProducto.setBackground(new java.awt.Color(240, 248, 255));
         comboBoxProducto.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
-        comboBoxProducto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gamesa", "Sabritas", "Barcel", "Ricolino", "Coca cola" }));
         comboBoxProducto.setBorder(null);
-
-        textInformacionProducto.setEditable(false);
-        textInformacionProducto.setBackground(new java.awt.Color(240, 248, 255));
-        textInformacionProducto.setColumns(5);
-        textInformacionProducto.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
-        textInformacionProducto.setRows(5);
-        textInformacionProducto.setBorder(null);
-        jScrollPane1.setViewportView(textInformacionProducto);
+        comboBoxProducto.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                comboBoxProductoMouseClicked(evt);
+            }
+        });
+        comboBoxProducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxProductoActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
         jLabel4.setText("Cantidad:");
 
         comboBoxCantidad.setBackground(new java.awt.Color(240, 248, 255));
         comboBoxCantidad.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
-        comboBoxCantidad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
         comboBoxCantidad.setBorder(null);
+        comboBoxCantidad.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                comboBoxCantidadMouseClicked(evt);
+            }
+        });
+        comboBoxCantidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxCantidadActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
         jLabel5.setText("Precio:");
 
         txtPrecio.setFont(new java.awt.Font("Arial", 0, 40)); // NOI18N
-        txtPrecio.setText("$0.00");
+        txtPrecio.setText("$0.0");
 
         btnLimpiarProducto.setBackground(new java.awt.Color(247, 94, 94));
         btnLimpiarProducto.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
@@ -200,27 +221,19 @@ public class JVenta extends javax.swing.JFrame {
             }
         });
 
+        listaProductos.setBackground(new java.awt.Color(240, 248, 255));
+        listaProductos.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
+        listaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaProductosMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(listaProductos);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 15, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(comboBoxProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(comboBoxCantidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(100, 100, 100))))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(100, 100, 100)
                 .addComponent(txtPrecio)
@@ -231,6 +244,23 @@ public class JVenta extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAgregarProducto)
                 .addGap(48, 48, 48))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(0, 15, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel3)
+                            .addComponent(comboBoxProducto, 0, 299, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboBoxCantidad, 0, 299, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(100, 100, 100))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -241,8 +271,8 @@ public class JVenta extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(comboBoxProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -491,7 +521,7 @@ public class JVenta extends javax.swing.JFrame {
         jLabel10.setText("Total a pagar:");
 
         txtTotalPagar.setFont(new java.awt.Font("Arial", 0, 38)); // NOI18N
-        txtTotalPagar.setText("$0.00");
+        txtTotalPagar.setText("0.0");
 
         btnVender.setBackground(new java.awt.Color(174, 228, 68));
         btnVender.setFont(new java.awt.Font("Candara", 0, 40)); // NOI18N
@@ -524,6 +554,9 @@ public class JVenta extends javax.swing.JFrame {
             }
         });
         campoTxtPagar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                campoTxtPagarKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 campoTxtPagarKeyTyped(evt);
             }
@@ -533,7 +566,7 @@ public class JVenta extends javax.swing.JFrame {
         jLabel12.setText("Cambio:");
 
         txtCambio.setFont(new java.awt.Font("Arial", 0, 38)); // NOI18N
-        txtCambio.setText("$0.00");
+        txtCambio.setText("$0.0");
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -554,7 +587,7 @@ public class JVenta extends javax.swing.JFrame {
                         .addComponent(jLabel11)
                         .addGap(102, 102, 102)
                         .addComponent(jLabel12)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
                 .addComponent(btnLimpiarVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnVender, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -703,8 +736,9 @@ public class JVenta extends javax.swing.JFrame {
 
     private void btnLimpiarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarProductoActionPerformed
         comboBoxProducto.setSelectedIndex(0);
-        textInformacionProducto.setText("Información del Producto");
-        comboBoxCantidad.setSelectedIndex(0);
+        listaProductos.setModel(new DefaultListModel<>());
+        listaProductos.clearSelection();
+        comboBoxCantidad.setModel(new DefaultComboBoxModel<>());
         txtPrecio.setText("$" + "0.00");
     }//GEN-LAST:event_btnLimpiarProductoActionPerformed
 
@@ -712,7 +746,38 @@ public class JVenta extends javax.swing.JFrame {
         if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
         } else {
-            //ventaBO.vender(List<Productos>, SOMEBITS, sesion);
+            List<ProductoDTO> lista = new ArrayList<>();
+            TableModel model = tableProductos.getModel();
+            listaProd = ventaBO.encontrarTodo();
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                int cantidad = Integer.parseInt(model.getValueAt(i, 0).toString());
+                String nombre = model.getValueAt(i, 1).toString();
+                double precio = Double.parseDouble(model.getValueAt(i, 2).toString());
+
+                Double precioVenta = null;
+                String marca = null;
+                Long categoria = null;
+
+                for (ProductoDTO prod : listaProd) {
+                    if (prod.getNombre() != null && prod.getNombre().equals(nombre)) {
+                        precioVenta = prod.getPrecioVenta() != null ? prod.getPrecioVenta() : 0.0;
+                        marca = prod.getMarca() != null ? prod.getMarca() : "Desconocida";
+                        categoria = prod.getCategoriaId() != null ? prod.getCategoriaId() : 0L;
+                    }
+                }
+
+                ProductoDTO pp = new ProductoDTO(nombre, precioVenta, cantidad, marca, categoria);
+                lista.add(pp);
+            }
+
+            try {
+                Double mnto = Double.parseDouble(campoTxtPagar.getText());
+                ventaBO.vender(lista, mnto, sesion);
+            } catch (PersistenciaException ex) {
+                Logger.getLogger(JVenta.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             JVenta jVenta = new JVenta();
             jVenta.setVisible(true);
             this.dispose();
@@ -727,13 +792,7 @@ public class JVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimpiarVentaActionPerformed
 
     private void campoTxtPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTxtPagarActionPerformed
-        if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
-        } else {
-            // Guardar los datos de la transaccion
-            // Calcular el cambio
-            txtCambio.setText("$ " + "0.00"); // Se agregara el cambio
-        }
+        // NADA
     }//GEN-LAST:event_campoTxtPagarActionPerformed
 
     private void btnMasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMasActionPerformed
@@ -742,6 +801,7 @@ public class JVenta extends javax.swing.JFrame {
 
     private void btnAgregarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarProductoActionPerformed
         // Agrega el producto a la lista para venderlo
+        actualizarTabla();
     }//GEN-LAST:event_btnAgregarProductoActionPerformed
 
     private void btnMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenosActionPerformed
@@ -756,39 +816,116 @@ public class JVenta extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_campoTxtPagarKeyTyped
 
-    public void actualizarTabla() {
-        tableProductos.getTableHeader().setVisible(false);
-        tableProductos.getTableHeader().setPreferredSize(new java.awt.Dimension(0, 0));
-        // Agregar datos de ejemplo
-        String[] columnas = {"Cantidad", "Producto", "Precio"};
-        DefaultTableModel modelo;
-        modelo = new DefaultTableModel(null, columnas);
-        modelo.setRowCount(0);
+    private void comboBoxProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxProductoActionPerformed
+        llenarProductos();
+    }//GEN-LAST:event_comboBoxProductoActionPerformed
 
-        Object[][] datos = {
-            {5, "Manzanas", 12.50},
-            {2, "Peras", 15.00},
-            {10, "Plátanos", 8.75},
-            {3, "Uvas", 20.00}
-        };
+    private void comboBoxProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comboBoxProductoMouseClicked
+        // NADA
+    }//GEN-LAST:event_comboBoxProductoMouseClicked
 
-        for (Object[] fila : datos) {
-            modelo.addRow(fila);
+    private void listaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaProductosMouseClicked
+        llenarCantidad();
+    }//GEN-LAST:event_listaProductosMouseClicked
+
+    private void comboBoxCantidadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comboBoxCantidadMouseClicked
+        // NADA
+    }//GEN-LAST:event_comboBoxCantidadMouseClicked
+
+    private void comboBoxCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxCantidadActionPerformed
+        int cant = comboBoxCantidad.getSelectedIndex() + 1;
+        String name = listaProductos.getSelectedValue();
+        double precio = 0;
+
+        listaProd = ventaBO.encontrarTodo();
+
+        for (ProductoDTO prod : listaProd) {
+            if (prod.getNombre() == null ? name == null : prod.getNombre().equals(name)) {
+                precio = prod.getPrecioVenta();
+            }
         }
 
-        tableProductos.setModel(modelo);
-        tableProductos.getTableHeader().setResizingAllowed(false);
-        tableProductos.setFillsViewportHeight(true);
-        //tableProductos.setEnabled(false);
+        double total = cant * precio;
 
+        txtPrecio.setText("$" + total);
+    }//GEN-LAST:event_comboBoxCantidadActionPerformed
+
+    private void campoTxtPagarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoTxtPagarKeyReleased
+        double total = Double.parseDouble(txtTotalPagar.getText());
+
+        // Calcular el cambio
+        double pago = Double.parseDouble(campoTxtPagar.getText());
+        double cambio = pago - total;
+        txtCambio.setText(String.valueOf(cambio));
+    }//GEN-LAST:event_campoTxtPagarKeyReleased
+
+    public void llenarProductos() {
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        listaProd = ventaBO.encontrarTodo();
+
+        for (ProductoDTO prod : listaProd) {
+            productoDTO.setNombre(prod.getNombre());
+
+            listModel.addElement(prod.getNombre());
+        }
+
+        listaProductos.setModel(listModel);
+    }
+
+    public void llenarCantidad() {
+        listaProd = ventaBO.encontrarTodo();
+
+        for (ProductoDTO prod : listaProd) {
+            productoDTO.setCantidad(prod.getCantidad());
+        }
+
+        for (int i = 1; i <= productoDTO.getCantidad(); i++) {
+            comboBoxCantidad.addItem(Integer.toString(i));
+        }
+    }
+
+    public void llenarMarcas() {
+        listaProd = ventaBO.encontrarTodo();
+
+        for (ProductoDTO prod : listaProd) {
+            productoDTO.setMarca(prod.getMarca());
+
+            comboBoxProducto.addItem(productoDTO.getMarca());
+        }
+    }
+
+    public void ventasRealizadas() {
+        // Este va a actualizarse tambien durante
+        txtVentasHoy.setText("0");
+    }
+
+    public void fechaHora() {
+        // Hora
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        Date date = new Date();
+        // Fecha
+        GregorianCalendar calendario = new GregorianCalendar();
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        String fechaHoy = formatoFecha.format(calendario.getTime());
+
+        txtFecha.setText(fechaHoy);
+        txtHora.setText(dateFormat.format(date));
+    }
+
+    public void tablaInicio() {
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        tableProductos.setIntercellSpacing(new java.awt.Dimension(1, 1)); // Reduce el espacio entre celdas
-        tableProductos.setRowMargin(1); // Ajusta el margen entre filas
+        tableProductos.getTableHeader().setVisible(false);
+        tableProductos.getTableHeader().setPreferredSize(new java.awt.Dimension(0, 0));
+        tableProductos.getTableHeader().setResizingAllowed(false);
+        tableProductos.setFillsViewportHeight(true);
+
+        tableProductos.setIntercellSpacing(new java.awt.Dimension(1, 1));
+        tableProductos.setRowMargin(1);
 
         tableProductos.getColumnModel().getColumn(0).setPreferredWidth(130); // Cantidad
         tableProductos.getColumnModel().getColumn(1).setPreferredWidth(550); // Producto
@@ -798,10 +935,46 @@ public class JVenta extends javax.swing.JFrame {
         tableProductos.getColumnModel().getColumn(1).setMaxWidth(550);
         tableProductos.getColumnModel().getColumn(2).setMaxWidth(142);
 
-        // Aplicar alineación
+        //Alineación
         tableProductos.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);  // Cantidad alineada a la derecha
         tableProductos.getColumnModel().getColumn(1).setCellRenderer(leftRenderer); // Producto alineado al centro
         tableProductos.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);  // Precio alineado a la derecha
+    }
+
+    public void actualizarTabla() {
+        // Agregar datos
+        String[] columnas = {"Cantidad", "Producto", "Precio"};
+        DefaultTableModel modelo;
+        modelo = new DefaultTableModel(null, columnas);
+        modelo.setRowCount(0);
+
+        int cant = comboBoxCantidad.getSelectedIndex() + 1;
+        String nombre = listaProductos.getSelectedValue();
+        double precio = 0;
+
+        listaProd = ventaBO.encontrarTodo();
+
+        for (ProductoDTO prod : listaProd) {
+            if (prod.getNombre() == null ? nombre == null : prod.getNombre().equals(nombre)) {
+                precio = prod.getPrecioVenta();
+            }
+        }
+
+        double total = cant * precio;
+
+        Object[][] datos = {
+            {cant, nombre, total}
+        };
+
+        for (Object[] fila : datos) {
+            modelo.addRow(fila);
+        }
+
+        tableProductos.setModel(modelo);
+        tablaInicio();
+        double anteriorTotal = Double.parseDouble(txtTotalPagar.getText());
+        double totalCompleto = anteriorTotal + total;
+        txtTotalPagar.setText(String.valueOf(totalCompleto));
     }
 
     public static void main(String args[]) {
@@ -875,11 +1048,11 @@ public class JVenta extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JList<String> listaProductos;
     private javax.swing.JTable tableProductos;
-    private javax.swing.JTextArea textInformacionProducto;
     private javax.swing.JLabel txtCambio;
     private javax.swing.JLabel txtFecha;
     private javax.swing.JLabel txtHora;
