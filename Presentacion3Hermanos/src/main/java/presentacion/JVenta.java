@@ -430,11 +430,7 @@ public class JVenta extends javax.swing.JFrame {
         tableProductos.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
         tableProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Cantidad", "Producto", "Precio"
@@ -744,55 +740,63 @@ public class JVenta extends javax.swing.JFrame {
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
         if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
-        } else {
-            List<ProductoDTO> lista = new ArrayList<>();
-            TableModel model = tableProductos.getModel();
-            List<ProductoDTO> listaProd = ventaBO.encontrarTodo();
+        JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
+    } else {
+        List<ProductoDTO> lista = new ArrayList<>();
+        TableModel model = tableProductos.getModel();
+        List<ProductoDTO> listaProd = ventaBO.encontrarTodo();
 
-            for (int i = 0; i < model.getRowCount(); i++) {
-                int cantidad = Integer.parseInt(model.getValueAt(i, 0).toString());
-                String nombre = model.getValueAt(i, 1).toString();
-                double precio = Double.parseDouble(model.getValueAt(i, 2).toString());
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Object objCantidad = model.getValueAt(i, 0);
+            Object objNombre = model.getValueAt(i, 1);
+            Object objPrecio = model.getValueAt(i, 2);
 
-                Long id = null;
-                Double precioVenta = 0.0;
-                String marca = "Desconocida";
-                Long categoria = 0L;
-                Integer cantidadProducto = 0;
-
-                for (ProductoDTO prod : listaProd) {
-                    if (prod.getNombre() != null && prod.getNombre().equals(nombre)) {
-                        id = prod.getId();
-                        cantidadProducto = prod.getCantidad();
-                        precioVenta = prod.getPrecioVenta() != null ? prod.getPrecioVenta() : 0.0;
-                        marca = prod.getMarca() != null ? prod.getMarca() : "Desconocida";
-                        categoria = prod.getCategoriaId() != null ? prod.getCategoriaId() : 0L;
-                    }
-                }
-
-                if (id == null) {
-                    JOptionPane.showMessageDialog(null, "Producto no encontrado: " + nombre);
-                    return;
-                }
-
-                ProductoDTO pp = new ProductoDTO(id, nombre, precioVenta, cantidadProducto, marca, categoria);
-                pp.setCantidadCompra(cantidad);
-                lista.add(pp);
+            if (objCantidad == null || objNombre == null || objPrecio == null) {
+                continue; 
             }
 
-            try {
-                Double mnto = Double.parseDouble(campoTxtPagar.getText());
-                ventaBO.vender(lista, mnto, sesion);
-                JOptionPane.showMessageDialog(null, "Se vendio correctamente");
-            } catch (PersistenciaException ex) {
-                Logger.getLogger(JVenta.class.getName()).log(Level.SEVERE, null, ex);
+            int cantidad = Integer.parseInt(objCantidad.toString());
+            String nombre = objNombre.toString();
+            double precio = Double.parseDouble(objPrecio.toString());
+
+            Long id = null;
+            Double precioVenta = 0.0;
+            String marca = "Desconocida";
+            Long categoria = 0L;
+            Integer cantidadProducto = 0;
+
+            for (ProductoDTO prod : listaProd) {
+                if (prod.getNombre() != null && prod.getNombre().equals(nombre)) {
+                    id = prod.getId();
+                    cantidadProducto = prod.getCantidad();
+                    precioVenta = (prod.getPrecioVenta() != null) ? prod.getPrecioVenta() : 0.0;
+                    marca = (prod.getMarca() != null) ? prod.getMarca() : "Desconocida";
+                    categoria = (prod.getCategoriaId() != null) ? prod.getCategoriaId() : 0L;
+                }
             }
 
-            JVenta jVenta = new JVenta();
-            jVenta.setVisible(true);
-            this.dispose();
+            if (id == null) {
+                JOptionPane.showMessageDialog(null, "Producto no encontrado: " + nombre);
+                return;
+            }
+
+            ProductoDTO pp = new ProductoDTO(id, nombre, precioVenta, cantidadProducto, marca, categoria);
+            pp.setCantidadCompra(cantidad);
+            lista.add(pp);
         }
+
+        try {
+            Double mnto = Double.parseDouble(campoTxtPagar.getText());
+            ventaBO.vender(lista, mnto, sesion);
+            JOptionPane.showMessageDialog(null, "Venta realizada correctamente");
+        } catch (PersistenciaException ex) {
+            Logger.getLogger(JVenta.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        JVenta jVenta = new JVenta();
+        jVenta.setVisible(true);
+        this.dispose();
+    }
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnLimpiarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarVentaActionPerformed
@@ -938,25 +942,26 @@ public class JVenta extends javax.swing.JFrame {
         tableProductos.setIntercellSpacing(new java.awt.Dimension(1, 1));
         tableProductos.setRowMargin(1);
 
-        tableProductos.getColumnModel().getColumn(0).setPreferredWidth(130); // Cantidad
-        tableProductos.getColumnModel().getColumn(1).setPreferredWidth(550); // Producto
-        tableProductos.getColumnModel().getColumn(2).setPreferredWidth(142); // Precio
+        tableProductos.getColumnModel().getColumn(0).setPreferredWidth(130); 
+        tableProductos.getColumnModel().getColumn(1).setPreferredWidth(550); 
+        tableProductos.getColumnModel().getColumn(2).setPreferredWidth(142); 
 
         tableProductos.getColumnModel().getColumn(0).setMaxWidth(140);
         tableProductos.getColumnModel().getColumn(1).setMaxWidth(550);
         tableProductos.getColumnModel().getColumn(2).setMaxWidth(142);
 
-        tableProductos.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);  // Cantidad alineada a la derecha
-        tableProductos.getColumnModel().getColumn(1).setCellRenderer(leftRenderer); // Producto alineado al centro
-        tableProductos.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);  // Precio alineado a la derecha
+        tableProductos.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);  
+        tableProductos.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
+        tableProductos.getColumnModel().getColumn(2).setCellRenderer(rightRenderer); 
     }
 
     public void actualizarTabla() {
-        // Agregar datos
-        String[] columnas = {"Cantidad", "Producto", "Precio"};
-        DefaultTableModel modelo;
-        modelo = new DefaultTableModel(null, columnas);
-        modelo.setRowCount(0);
+        DefaultTableModel modelo = (DefaultTableModel) tableProductos.getModel();
+
+        if (modelo.getColumnCount() == 0) {
+            String[] columnas = {"Cantidad", "Producto", "Precio"};
+            modelo.setColumnIdentifiers(columnas);
+        }
 
         int cant = comboBoxCantidad.getSelectedIndex() + 1;
         String nombre = listaProductos.getSelectedValue();
@@ -965,24 +970,25 @@ public class JVenta extends javax.swing.JFrame {
         listaProd = ventaBO.encontrarTodo();
 
         for (ProductoDTO prod : listaProd) {
-            if (prod.getNombre() == null ? nombre == null : prod.getNombre().equals(nombre)) {
+            if (nombre != null && nombre.equals(prod.getNombre())) {
                 precio = prod.getPrecioVenta();
+                break;
             }
         }
 
         double total = cant * precio;
 
-        Object[][] datos = {
-            {cant, nombre, total}
-        };
-
-        for (Object[] fila : datos) {
-            modelo.addRow(fila);
-        }
+        modelo.addRow(new Object[]{cant, nombre, total});
 
         tableProductos.setModel(modelo);
         tablaInicio();
-        double anteriorTotal = Double.parseDouble(txtTotalPagar.getText());
+
+        double anteriorTotal = 0;
+        try {
+            anteriorTotal = Double.parseDouble(txtTotalPagar.getText());
+        } catch (NumberFormatException ex) {
+            anteriorTotal = 0;
+        }
         double totalCompleto = anteriorTotal + total;
         txtTotalPagar.setText(String.valueOf(totalCompleto));
     }
