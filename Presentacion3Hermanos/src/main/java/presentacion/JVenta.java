@@ -5,7 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
-import ventaBO.VentaBO;
+import javax.swing.table.DefaultTableModel;
+//import ventaBO.VentaBO;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -13,8 +16,7 @@ import ventaBO.VentaBO;
  */
 public class JVenta extends javax.swing.JFrame {
 
-    private VentaBO ventaBO = new VentaBO();
-    
+    // private VentaBO ventaBO = new VentaBO();
     // Hora
     DateFormat dateFormat = new SimpleDateFormat("HH:mm");
     Date date = new Date();
@@ -37,6 +39,7 @@ public class JVenta extends javax.swing.JFrame {
         txtVentasHoy.setText("0");
         // Aqui el usuario debe ser en base al Login
         txtUsuario.setText("Kat");
+        actualizarTabla();
     }
 
     /**
@@ -79,11 +82,10 @@ public class JVenta extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
         btnMas = new javax.swing.JButton();
         btnMenos = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tableProductos = new javax.swing.JTable();
         jPanel7 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         txtTotalPagar = new javax.swing.JLabel();
@@ -103,7 +105,6 @@ public class JVenta extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Ventas");
         setBackground(new java.awt.Color(255, 255, 255));
-        setPreferredSize(new java.awt.Dimension(1307, 720));
 
         fondo.setBackground(new java.awt.Color(240, 248, 255));
         fondo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -299,10 +300,10 @@ public class JVenta extends javax.swing.JFrame {
         jLabel9.setText("Hora:");
 
         txtFecha.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
-        txtFecha.setText("18 de Febrero de 2025");
+        txtFecha.setText("DD/MM/YYYY");
 
         txtHora.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        txtHora.setText("10:43");
+        txtHora.setText("hh:mm");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -317,7 +318,7 @@ public class JVenta extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtHora)
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addContainerGap(104, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -375,15 +376,6 @@ public class JVenta extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
         jLabel15.setText("Precio:");
 
-        jLabel16.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
-        jLabel16.setText("2x");
-
-        jLabel17.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
-        jLabel17.setText("Sabritas \"Cheetos Torciditos\"");
-
-        jLabel18.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
-        jLabel18.setText("$40.00");
-
         btnMas.setBackground(new java.awt.Color(174, 228, 68));
         btnMas.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         btnMas.setText("+");
@@ -404,6 +396,46 @@ public class JVenta extends javax.swing.JFrame {
             }
         });
 
+        tableProductos.setBackground(new java.awt.Color(255, 249, 237));
+        tableProductos.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
+        tableProductos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Cantidad", "Producto", "Precio"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.Float.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tableProductos.setAutoscrolls(false);
+        tableProductos.setGridColor(new java.awt.Color(255, 249, 237));
+        tableProductos.setRowHeight(35);
+        tableProductos.setRowMargin(2);
+        tableProductos.setRowSelectionAllowed(false);
+        tableProductos.setSelectionBackground(new java.awt.Color(255, 249, 237));
+        tableProductos.setShowGrid(false);
+        tableProductos.setUpdateSelectionOnSort(false);
+        tableProductos.setVerifyInputWhenFocusTarget(false);
+        jScrollPane3.setViewportView(tableProductos);
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -414,25 +446,20 @@ public class JVenta extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 922, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(17, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnMas)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnMenos)
+                        .addGap(23, 23, 23))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel13)
-                        .addGap(131, 131, 131)
+                        .addGap(69, 69, 69)
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel15)
-                        .addGap(127, 127, 127))))
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(jLabel16)
-                .addGap(156, 156, 156)
-                .addComponent(jLabel17)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel18)
-                .addGap(24, 24, 24)
-                .addComponent(btnMas)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnMenos)
-                .addGap(30, 30, 30))
+                        .addGap(128, 128, 128))))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -444,14 +471,16 @@ public class JVenta extends javax.swing.JFrame {
                     .addComponent(jLabel15))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel16)
-                    .addComponent(jLabel17)
-                    .addComponent(jLabel18)
-                    .addComponent(btnMas)
-                    .addComponent(btnMenos))
-                .addContainerGap(375, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnMas)
+                            .addComponent(btnMenos)))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         fondo.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 125, 966, 473));
@@ -462,7 +491,7 @@ public class JVenta extends javax.swing.JFrame {
         jLabel10.setText("Total a pagar:");
 
         txtTotalPagar.setFont(new java.awt.Font("Arial", 0, 38)); // NOI18N
-        txtTotalPagar.setText("$40.00");
+        txtTotalPagar.setText("$0.00");
 
         btnVender.setBackground(new java.awt.Color(174, 228, 68));
         btnVender.setFont(new java.awt.Font("Candara", 0, 40)); // NOI18N
@@ -727,9 +756,54 @@ public class JVenta extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_campoTxtPagarKeyTyped
 
-    /**
-     * @param args the command line arguments
-     */
+    public void actualizarTabla() {
+        tableProductos.getTableHeader().setVisible(false);
+        tableProductos.getTableHeader().setPreferredSize(new java.awt.Dimension(0, 0));
+        // Agregar datos de ejemplo
+        String[] columnas = {"Cantidad", "Producto", "Precio"};
+        DefaultTableModel modelo;
+        modelo = new DefaultTableModel(null, columnas);
+        modelo.setRowCount(0);
+
+        Object[][] datos = {
+            {5, "Manzanas", 12.50},
+            {2, "Peras", 15.00},
+            {10, "Plátanos", 8.75},
+            {3, "Uvas", 20.00}
+        };
+
+        for (Object[] fila : datos) {
+            modelo.addRow(fila);
+        }
+
+        tableProductos.setModel(modelo);
+        tableProductos.getTableHeader().setResizingAllowed(false);
+        tableProductos.setFillsViewportHeight(true);
+        //tableProductos.setEnabled(false);
+
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        tableProductos.setIntercellSpacing(new java.awt.Dimension(1, 1)); // Reduce el espacio entre celdas
+        tableProductos.setRowMargin(1); // Ajusta el margen entre filas
+
+        tableProductos.getColumnModel().getColumn(0).setPreferredWidth(130); // Cantidad
+        tableProductos.getColumnModel().getColumn(1).setPreferredWidth(550); // Producto
+        tableProductos.getColumnModel().getColumn(2).setPreferredWidth(142); // Precio
+
+        tableProductos.getColumnModel().getColumn(0).setMaxWidth(140);
+        tableProductos.getColumnModel().getColumn(1).setMaxWidth(550);
+        tableProductos.getColumnModel().getColumn(2).setMaxWidth(142);
+
+        // Aplicar alineación
+        tableProductos.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);  // Cantidad alineada a la derecha
+        tableProductos.getColumnModel().getColumn(1).setCellRenderer(leftRenderer); // Producto alineado al centro
+        tableProductos.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);  // Precio alineado a la derecha
+    }
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -786,9 +860,6 @@ public class JVenta extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -805,7 +876,9 @@ public class JVenta extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTable tableProductos;
     private javax.swing.JTextArea textInformacionProducto;
     private javax.swing.JLabel txtCambio;
     private javax.swing.JLabel txtFecha;
