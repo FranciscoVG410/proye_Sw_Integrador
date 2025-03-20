@@ -748,32 +748,43 @@ public class JVenta extends javax.swing.JFrame {
         } else {
             List<ProductoDTO> lista = new ArrayList<>();
             TableModel model = tableProductos.getModel();
-            listaProd = ventaBO.encontrarTodo();
+            List<ProductoDTO> listaProd = ventaBO.encontrarTodo();
 
             for (int i = 0; i < model.getRowCount(); i++) {
                 int cantidad = Integer.parseInt(model.getValueAt(i, 0).toString());
                 String nombre = model.getValueAt(i, 1).toString();
                 double precio = Double.parseDouble(model.getValueAt(i, 2).toString());
 
-                Double precioVenta = null;
-                String marca = null;
-                Long categoria = null;
+                Long id = null;
+                Double precioVenta = 0.0;
+                String marca = "Desconocida";
+                Long categoria = 0L;
+                Integer cantidadProducto = 0;
 
                 for (ProductoDTO prod : listaProd) {
                     if (prod.getNombre() != null && prod.getNombre().equals(nombre)) {
+                        id = prod.getId();
+                        cantidadProducto = prod.getCantidad();
                         precioVenta = prod.getPrecioVenta() != null ? prod.getPrecioVenta() : 0.0;
                         marca = prod.getMarca() != null ? prod.getMarca() : "Desconocida";
                         categoria = prod.getCategoriaId() != null ? prod.getCategoriaId() : 0L;
                     }
                 }
 
-                ProductoDTO pp = new ProductoDTO(nombre, precioVenta, cantidad, marca, categoria);
+                if (id == null) {
+                    JOptionPane.showMessageDialog(null, "Producto no encontrado: " + nombre);
+                    return;
+                }
+
+                ProductoDTO pp = new ProductoDTO(id, nombre, precioVenta, cantidadProducto, marca, categoria);
+                pp.setCantidadCompra(cantidad);
                 lista.add(pp);
             }
 
             try {
                 Double mnto = Double.parseDouble(campoTxtPagar.getText());
                 ventaBO.vender(lista, mnto, sesion);
+                JOptionPane.showMessageDialog(null, "Se vendio correctamente");
             } catch (PersistenciaException ex) {
                 Logger.getLogger(JVenta.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -935,7 +946,6 @@ public class JVenta extends javax.swing.JFrame {
         tableProductos.getColumnModel().getColumn(1).setMaxWidth(550);
         tableProductos.getColumnModel().getColumn(2).setMaxWidth(142);
 
-        //Alineación
         tableProductos.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);  // Cantidad alineada a la derecha
         tableProductos.getColumnModel().getColumn(1).setCellRenderer(leftRenderer); // Producto alineado al centro
         tableProductos.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);  // Precio alineado a la derecha
