@@ -714,7 +714,11 @@ public class JVenta extends javax.swing.JFrame {
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
         if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
-        } else {
+        } 
+        else if (Double.parseDouble(txtTotalPagar.getText()) > Double.parseDouble(campoTxtPagar.getText())){
+            JOptionPane.showMessageDialog(null, "Error! El monto no es suficiente para pagar el total");
+        }
+        else {
             List<ProductoDTO> lista = new ArrayList<>();
             TableModel model = tableProductos.getModel();
             List<ProductoDTO> listaProd = ventaBO.encontrarTodo();
