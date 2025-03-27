@@ -43,7 +43,7 @@ import persistencia.VentaDAO;
 public class MainPrueba {
 
     public static void main(String[] args) {
-        //Creamos las Daos son un monton aslñdkjasñldk
+//        Creamos las Daos son un monton aslñdkjasñldk
         IUsuarioDAO usuarioDAO = new UsuarioDAO();
         IEmpleadoDAO empleadoDAO = new EmpleadoDAO();
         IAdministradorDAO administradorDAO = new AdministradorDAO();
@@ -105,6 +105,15 @@ public class MainPrueba {
             producto.setCategoria(categoria);
             productoDAO.guardar(producto);
             System.out.println("Producto guardado: " + producto.getNombre());
+
+            Producto producto1 = new Producto();
+            producto1.setNombre("Frijoles");
+            producto1.setPrecioVenta(20.0);
+            producto1.setCantidad(50);
+            producto1.setMarca("La Reminicencia");
+            producto1.setCategoria(categoria);
+            productoDAO.guardar(producto1);
+            System.out.println("Producto guardado: " + producto1.getNombre());
 
             Compra compra = new Compra();
             compra.setProveedor(proveedor);

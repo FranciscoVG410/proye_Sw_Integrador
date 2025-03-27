@@ -796,7 +796,7 @@ public class JVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_campoTxtPagarKeyTyped
 
     private void comboBoxProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxProductoActionPerformed
-        llenarProductos();
+        llenarProductos(comboBoxProducto.getSelectedItem().toString());
     }//GEN-LAST:event_comboBoxProductoActionPerformed
 
     private void comboBoxProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comboBoxProductoMouseClicked
@@ -804,7 +804,7 @@ public class JVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_comboBoxProductoMouseClicked
 
     private void listaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaProductosMouseClicked
-        llenarCantidad();
+        llenarCantidad(comboBoxProducto.getSelectedItem().toString());
     }//GEN-LAST:event_listaProductosMouseClicked
 
     private void comboBoxCantidadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comboBoxCantidadMouseClicked
@@ -862,9 +862,13 @@ public class JVenta extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tableProductosMouseClicked
 
-    public void llenarProductos() {
+    public void llenarProductos(String marca) {
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        listaProd = ventaBO.encontrarTodo();
+        try {
+            listaProd = ventaBO.encontrarPorMarca(marca);
+        } catch (PersistenciaException ex) {
+            Logger.getLogger(JVenta.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         for (ProductoDTO prod : listaProd) {
             productoDTO.setNombre(prod.getNombre());
@@ -875,8 +879,12 @@ public class JVenta extends javax.swing.JFrame {
         listaProductos.setModel(listModel);
     }
 
-    public void llenarCantidad() {
-        listaProd = ventaBO.encontrarTodo();
+    public void llenarCantidad(String marca) {
+        try {
+            listaProd = ventaBO.encontrarPorMarca(marca);
+        } catch (PersistenciaException ex) {
+            Logger.getLogger(JVenta.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         for (ProductoDTO prod : listaProd) {
             productoDTO.setCantidad(prod.getCantidad());
