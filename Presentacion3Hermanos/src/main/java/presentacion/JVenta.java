@@ -854,7 +854,7 @@ public class JVenta extends javax.swing.JFrame {
             }
 
             if (productoSeleccionado != null) {
-                EditarProductoDialog dialog = new EditarProductoDialog(this, productoSeleccionado);
+                JEditarProducto dialog = JEditarProducto.getInstance(this, productoSeleccionado);
                 dialog.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(null, "Producto no encontrado.");
