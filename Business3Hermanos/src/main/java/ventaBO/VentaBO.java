@@ -26,16 +26,39 @@ import persistencia.VentaDAO;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class VentaBO {
+
     //Inicializamos las DAO
     private ProductoDAO productoDAO = new ProductoDAO();
     private VentaDAO ventaDAO = new VentaDAO();
     private ProductoTransaccionDAO productoTransaccionDAO = new ProductoTransaccionDAO();
-    
+
     //Inicializamos los Conversores
     private ProductoConversor productoConversor = new ProductoConversor();
-    
+
     public List<ProductoDTO> encontrarTodo() {
         List<Producto> productosEntity = productoDAO.encontrarTodos();
+        List<ProductoDTO> productosDTO = new ArrayList<>();
+
+        for (Producto productoEntity : productosEntity) {
+            productosDTO.add(productoConversor.entityADto(productoEntity));
+        }
+
+        return productosDTO;
+    }
+
+    public List<ProductoDTO> encontrarPorCategoria(Long categoriaId) throws PersistenciaException {
+        List<Producto> productosEntity = productoDAO.encontrarPorCategoria(categoriaId);
+        List<ProductoDTO> productosDTO = new ArrayList<>();
+
+        for (Producto productoEntity : productosEntity) {
+            productosDTO.add(productoConversor.entityADto(productoEntity));
+        }
+
+        return productosDTO;
+    }
+
+    public List<ProductoDTO> encontrarPorMarca(String marca) throws PersistenciaException {
+        List<Producto> productosEntity = productoDAO.encontrarPorMarca(marca);
         List<ProductoDTO> productosDTO = new ArrayList<>();
 
         for (Producto productoEntity : productosEntity) {
@@ -72,43 +95,44 @@ public class VentaBO {
     }
 
     /**
-     * Registra una venta completa: se guarda la venta, se registra cada producto vendido
-     * como una transacción y se actualiza el stock de los productos.
+     * Registra una venta completa: se guarda la venta, se registra cada
+     * producto vendido como una transacción y se actualiza el stock de los
+     * productos.
      *
-     * @param productosDTO lista de productos a vender (cada uno con la cantidad a comprar)
+     * @param productosDTO lista de productos a vender (cada uno con la cantidad
+     * a comprar)
      * @param montoCliente monto entregado por el cliente
      * @param sesion la sesión actual a la que se asocia la venta
-     * @throws PersistenciaException si ocurre algún error en la persistencia o validación
+     * @throws PersistenciaException si ocurre algún error en la persistencia o
+     * validación
      */
     public void vender(List<ProductoDTO> productosDTO, double montoCliente, Sesion sesion) throws PersistenciaException {
         double totalVenta = calcularTotalVenta(productosDTO);
-        // primero checar si hay suficiente y luego persisiteir la venta
-        Venta venta = new Venta();
-        venta.setSesion(sesion);
-        venta.setTotal(totalVenta);
-        ventaDAO.guardar(venta);
-        
         for (ProductoDTO dto : productosDTO) {
             Producto producto = productoDAO.encontrarPorId(dto.getId());
-            
-            int cantidadVenta = dto.getCantidadCompra(); //venta jajaj
+
+            int cantidadVenta = dto.getCantidadCompra();
             if (producto.getCantidad() < cantidadVenta) {
-                throw new PersistenciaException("Cantidad insuficiente para el producto: " + producto.getNombre());
+                throw new PersistenciaException("Cantidad insuficiente para el producto: " + producto.getNombre() + "\nEn el inventario solo hay: " + producto.getCantidad());
             }
-            
+
+            Venta venta = new Venta();
+            venta.setSesion(sesion);
+            venta.setTotal(totalVenta);
+            ventaDAO.guardar(venta);
+
             ProductoTransaccion pt = new ProductoTransaccion();
             pt.setTransaccion(venta);
             pt.setProducto(producto);
             pt.setCantidad(cantidadVenta);
             pt.setPrecio(producto.getPrecioVenta());
             pt.setFechaHora(LocalDateTime.now());
-            
+
             productoTransaccionDAO.guardar(pt);
 
             producto.setCantidad(producto.getCantidad() - cantidadVenta);
             productoDAO.editar(producto);
         }
     }
-    
-}
 
+}

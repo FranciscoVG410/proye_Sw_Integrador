@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface IProductoDAO extends IGenericDAO<Producto>{
     public List<Producto> encontrarPorCategoria(Long categoriaId) throws PersistenciaException;
+    public List<Producto> encontrarPorMarca(String marca) throws PersistenciaException;
 }

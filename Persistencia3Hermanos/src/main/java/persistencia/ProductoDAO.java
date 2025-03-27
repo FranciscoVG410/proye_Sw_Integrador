@@ -11,8 +11,8 @@ import javax.persistence.TypedQuery;
  *
  * @author Berry
  */
-public class ProductoDAO extends GenericDAO<Producto> implements IProductoDAO{
-    
+public class ProductoDAO extends GenericDAO<Producto> implements IProductoDAO {
+
     public ProductoDAO() {
         super(Producto.class);
     }
@@ -30,5 +30,17 @@ public class ProductoDAO extends GenericDAO<Producto> implements IProductoDAO{
             em.close();
         }
     }
-    
+
+    public List<Producto> encontrarPorMarca(String marca) throws PersistenciaException {
+        EntityManager em = conexion.abrir();
+        try {
+            TypedQuery<Producto> query = em.createQuery("SELECT p FROM Producto p WHERE p.marca = :marca", Producto.class);
+            query.setParameter("marca", marca);
+            return query.getResultList();
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al buscar productos por marca: " + marca, e);
+        } finally {
+            em.close();
+        }
+    }
 }
