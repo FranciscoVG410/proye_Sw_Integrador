@@ -714,11 +714,9 @@ public class JVenta extends javax.swing.JFrame {
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
         if (campoTxtPagar.getText().isBlank() || campoTxtPagar.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
-        } 
-        else if (Double.parseDouble(txtTotalPagar.getText()) > Double.parseDouble(campoTxtPagar.getText())){
+        } else if (Double.parseDouble(txtTotalPagar.getText()) > Double.parseDouble(campoTxtPagar.getText())) {
             JOptionPane.showMessageDialog(null, "Error! El monto no es suficiente para pagar el total");
-        }
-        else {
+        } else {
             List<ProductoDTO> lista = new ArrayList<>();
             TableModel model = tableProductos.getModel();
             List<ProductoDTO> listaProd = ventaBO.encontrarTodo();
@@ -964,6 +962,12 @@ public class JVenta extends javax.swing.JFrame {
         }
 
         int cant = comboBoxCantidad.getSelectedIndex() + 1;
+
+        if (cant <= 0 || listaProductos.getSelectedValue() == null) {
+            JOptionPane.showMessageDialog(this, "Debe de agregarse mínimo un producto", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String nombre = listaProductos.getSelectedValue();
         double precio = 0;
 
@@ -977,19 +981,34 @@ public class JVenta extends javax.swing.JFrame {
         }
 
         double total = cant * precio;
+        boolean productoYaExiste = false;
 
-        modelo.addRow(new Object[]{cant, nombre, total});
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String nombreEnTabla = (String) modelo.getValueAt(i, 1);
+            if (nombreEnTabla.equals(nombre)) {
+                int cantidadExistente = (int) modelo.getValueAt(i, 0);
+                int nuevaCantidad = cantidadExistente + cant;
+                double nuevoTotal = nuevaCantidad * precio;
+
+                modelo.setValueAt(nuevaCantidad, i, 0);
+                modelo.setValueAt(nuevoTotal, i, 2);
+                productoYaExiste = true;
+                break;
+            }
+        }
+
+        if (!productoYaExiste) {
+            modelo.addRow(new Object[]{cant, nombre, total});
+        }
 
         tableProductos.setModel(modelo);
         tablaInicio();
 
-        double anteriorTotal = 0;
-        try {
-            anteriorTotal = Double.parseDouble(txtTotalPagar.getText());
-        } catch (NumberFormatException ex) {
-            anteriorTotal = 0;
+        double totalCompleto = 0;
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            totalCompleto += (double) modelo.getValueAt(i, 2);
         }
-        double totalCompleto = anteriorTotal + total;
+
         txtTotalPagar.setText(String.valueOf(totalCompleto));
     }
 

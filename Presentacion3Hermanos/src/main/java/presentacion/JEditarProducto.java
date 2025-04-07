@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
  * @author Manuel Octavio Perez Dominguez 00000247439
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
-public class JEditarProducto extends javax.swing.JFrame {
+public class JEditarProducto extends javax.swing.JDialog {
 
     private static JEditarProducto instance;
 
@@ -20,7 +20,9 @@ public class JEditarProducto extends javax.swing.JFrame {
     private JVenta parent;
 
     private JEditarProducto(JVenta parent, ProductoDTO productoDto) {
+        super(parent, true);
         initComponents();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         actualizarDatos(parent, productoDto);
     }
 
@@ -41,7 +43,7 @@ public class JEditarProducto extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JButton();
         txtCantidad = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel6.setBackground(new java.awt.Color(175, 203, 255));
 
@@ -212,8 +214,8 @@ public class JEditarProducto extends javax.swing.JFrame {
 
     private void cambiarCantidad(int cambio) {
         cantidad += cambio;
-        if (cantidad < 0) {
-            cantidad = 0;
+        if (cantidad <= 0) {
+            cantidad = 1;
         }
         txtCantidad.setText(String.valueOf(cantidad));
     }
@@ -249,7 +251,7 @@ public class JEditarProducto extends javax.swing.JFrame {
     }
 
     public static JEditarProducto getInstance(JVenta parent, ProductoDTO producto) {
-        if (instance == null) {
+        if (instance == null || !instance.isDisplayable()) {
             instance = new JEditarProducto(parent, producto);
         } else {
             instance.actualizarDatos(parent, producto);
