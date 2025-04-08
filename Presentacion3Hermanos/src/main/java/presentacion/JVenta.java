@@ -775,9 +775,12 @@ public class JVenta extends javax.swing.JFrame {
 
     private void btnLimpiarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarVentaActionPerformed
         // Se supone que la ventana estara vacia, entonces en esto no habra problema
-        JVenta jVenta = new JVenta();
-        jVenta.setVisible(true);
-        this.dispose();
+        int confirm = JOptionPane.showConfirmDialog(null, "¿Seguro que quieres limpiar el sistema?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            JVenta jVenta = new JVenta();
+            jVenta.setVisible(true);
+            this.dispose();
+        }
     }//GEN-LAST:event_btnLimpiarVentaActionPerformed
 
     private void campoTxtPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTxtPagarActionPerformed
