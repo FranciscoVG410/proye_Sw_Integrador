@@ -760,16 +760,21 @@ public class JVenta extends javax.swing.JFrame {
                 lista.add(pp);
             }
 
-            try {
-                Double mnto = Double.parseDouble(campoTxtPagar.getText());
-                ventaBO.vender(lista, mnto, sesion);
-                JOptionPane.showMessageDialog(null, "Venta realizada correctamente");
-                JVenta jVenta = new JVenta();
-                jVenta.setVisible(true);
-                this.dispose();
-            } catch (PersistenciaException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage());
+            if (lista.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Error! Se necesita minimo un producto para vender");
+            } else {
+                try {
+                    Double mnto = Double.valueOf(campoTxtPagar.getText());
+                    ventaBO.vender(lista, mnto, sesion);
+                    JOptionPane.showMessageDialog(null, "Venta realizada correctamente");
+                    JVenta jVenta = new JVenta();
+                    jVenta.setVisible(true);
+                    this.dispose();
+                } catch (PersistenciaException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
             }
+
         }
     }//GEN-LAST:event_btnVenderActionPerformed
 
@@ -802,6 +807,7 @@ public class JVenta extends javax.swing.JFrame {
 
     private void comboBoxProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxProductoActionPerformed
         llenarProductos(comboBoxProducto.getSelectedItem().toString());
+        limpiarPrecioAgregarProducto();
     }//GEN-LAST:event_comboBoxProductoActionPerformed
 
     private void comboBoxProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comboBoxProductoMouseClicked
@@ -809,7 +815,7 @@ public class JVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_comboBoxProductoMouseClicked
 
     private void listaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaProductosMouseClicked
-        llenarCantidad(comboBoxProducto.getSelectedItem().toString());
+        llenarCantidad(comboBoxProducto.getSelectedItem().toString(), listaProductos.getSelectedValue().toString());
     }//GEN-LAST:event_listaProductosMouseClicked
 
     private void comboBoxCantidadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comboBoxCantidadMouseClicked
@@ -867,6 +873,10 @@ public class JVenta extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tableProductosMouseClicked
 
+    public void limpiarPrecioAgregarProducto() {
+        txtPrecio.setText("$0.0");
+    }
+
     public void llenarProductos(String marca) {
         DefaultListModel<String> listModel = new DefaultListModel<>();
         try {
@@ -884,19 +894,24 @@ public class JVenta extends javax.swing.JFrame {
         listaProductos.setModel(listModel);
     }
 
-    public void llenarCantidad(String marca) {
+    public void llenarCantidad(String marca, String nombreProductoSeleccionado) {
         try {
             listaProd = ventaBO.encontrarPorMarca(marca);
         } catch (PersistenciaException ex) {
             Logger.getLogger(JVenta.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        for (ProductoDTO prod : listaProd) {
-            productoDTO.setCantidad(prod.getCantidad());
-        }
+        comboBoxCantidad.removeAllItems();
 
-        for (int i = 1; i <= productoDTO.getCantidad(); i++) {
-            comboBoxCantidad.addItem(Integer.toString(i));
+        for (ProductoDTO prod : listaProd) {
+            if (prod.getNombre().equals(nombreProductoSeleccionado)) {
+                productoDTO.setCantidad(prod.getCantidad());
+
+                for (int i = 1; i <= prod.getCantidad(); i++) {
+                    comboBoxCantidad.addItem(Integer.toString(i));
+                }
+                break;
+            }
         }
     }
 
