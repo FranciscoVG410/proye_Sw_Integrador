@@ -716,6 +716,7 @@ public class JVenta extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error! Ingrese la cantidad de pago");
         } else if (Double.parseDouble(txtTotalPagar.getText()) > Double.parseDouble(campoTxtPagar.getText())) {
             JOptionPane.showMessageDialog(null, "Error! El monto no es suficiente para pagar el total");
+            campoTxtPagar.setText("");
         } else {
             List<ProductoDTO> lista = new ArrayList<>();
             TableModel model = tableProductos.getModel();
