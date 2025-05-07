@@ -65,7 +65,8 @@ public abstract class GenericDAO<T> implements IGenericDAO<T>{
         EntityManager em = conexion.abrir();
         em.getTransaction().begin();
         try {
-            em.remove(entity);
+            T entidadGestionada = em.contains(entity) ? entity : em.merge(entity);
+            em.remove(entidadGestionada);
             em.getTransaction().commit();
         } catch (Exception e) {
             em.getTransaction().rollback();
