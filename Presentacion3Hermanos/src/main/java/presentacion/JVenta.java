@@ -698,8 +698,9 @@ public class JVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_btnComprasActionPerformed
 
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-//        JReportes jReportes = new JReportes();
-//        jReportes.setVisible(true);
+
+        JReportes jReportes = new JReportes();
+        jReportes.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnReportesActionPerformed
 

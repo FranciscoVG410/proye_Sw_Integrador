@@ -1,0 +1,7 @@
+=== REPORTE DE VENTAS ===
+Fecha de generación: 2025-05-14
+
+Producto: Arroz
+Cantidad Vendida: 4
+Total Ganado: $82.0
+------------------------------------
