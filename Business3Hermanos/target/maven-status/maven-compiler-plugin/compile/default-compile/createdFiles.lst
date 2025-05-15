@@ -1,3 +1,5 @@
 ventaBO\VentaBO.class
-conversores\ProductoConversor.class
+reporteBO\RepoVentasBO.class
 mainPruebas\MainPrueba.class
+productoBO\ProductoBO.class
+conversores\ProductoConversor.class
