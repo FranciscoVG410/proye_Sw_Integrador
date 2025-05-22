@@ -616,6 +616,11 @@ public class JVenta extends javax.swing.JFrame {
         btnProducto.setText("Producto");
         btnProducto.setBorder(null);
         btnProducto.setBorderPainted(false);
+        btnProducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductoActionPerformed(evt);
+            }
+        });
         fondo.add(btnProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(1176, 11, 120, 56));
 
         btnVentas.setBackground(new java.awt.Color(135, 170, 220));
@@ -874,6 +879,14 @@ public class JVenta extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_tableProductosMouseClicked
+
+    private void btnProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductoActionPerformed
+        
+        this.dispose();
+        JProducto jproducto = new JProducto(this, true);
+        jproducto.setVisible(true);
+        
+    }//GEN-LAST:event_btnProductoActionPerformed
 
     public void limpiarPrecioAgregarProducto() {
         txtPrecio.setText("$0.0");

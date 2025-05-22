@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="676d7ea2-2ae3-472a-be62-7e791b2693ac">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT 
+    p.nombre AS producto,
+    pt.cantidad,
+    pt.precio,
+    (pt.cantidad * pt.precio) AS total_producto
+FROM 
+    productotransacciones pt
+JOIN 
+    productos p ON pt.producto_id = p.ID
+JOIN 
+    transacciones t ON pt.transaccion_id = t.ID
+JOIN 
+    venta v ON t.ID = v.ID
+WHERE 
+    DATE(pt.fecha_hora) = CURRENT_DATE;]]>
+	</queryString>
+	<field name="producto" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="precio" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_producto" class="java.lang.Double"/>
+	<variable name="total_producto_1" class="java.lang.Double" resetType="Page" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_producto}]]></variableExpression>
+	</variable>
+	<variable name="cantidad_1" class="java.lang.Integer" resetType="Page" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad}]]></variableExpression>
+	</variable>
+	<variable name="total_producto_2" class="java.lang.Double" resetType="Page" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_producto}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="161" y="0" width="231" height="69" uuid="451cb4cc-d612-451d-8124-15d9b08b1ea5"/>
+				<textElement textAlignment="Center">
+					<font size="26"/>
+				</textElement>
+				<text><![CDATA[ABARROTES 3 HERMANOS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<textField>
+				<reportElement x="61" y="15" width="100" height="20" uuid="adfb33f7-e998-4612-906b-a39bcf475e1a"/>
+				<textFieldExpression><![CDATA["Reporte de ventas"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="61" y="0" width="100" height="20" uuid="e184d141-eb6e-4bf4-954f-9e40857c271f"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="37" y="38" width="55" height="23" uuid="5e846486-6eef-4ab6-a7fa-39aaea2221f6"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA["CANT"]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="38" width="103" height="23" uuid="dc5f6d07-59de-4204-9e32-b4f865859c84"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA["PRODUCTO"]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="435" y="38" width="93" height="23" uuid="d6107cf8-04a3-44af-80ad-ddb7520fe9c3"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA["PRECIO"]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement x="140" y="17" width="223" height="20" uuid="b8b27fc5-2bec-45a0-936f-b37d5105302f"/>
+				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="37" y="17" width="100" height="20" uuid="f45ed932-04e0-45ea-b91f-05fd972bc7d5"/>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="435" y="17" width="100" height="20" uuid="5695eb95-9d92-45f4-a716-3820fb354cc0"/>
+				<textFieldExpression><![CDATA[$F{total_producto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="230" height="23" uuid="a77cc9dd-2d4a-4a9b-a6d4-8ca7e0312480"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA["CANTIDAD DE PRODUCTOS"]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="31" width="68" height="23" uuid="ba8dd95a-07d7-416b-99b1-3f2330d379e7"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA["TOTAL"]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="428" y="0" width="100" height="20" uuid="69176454-075e-4154-895c-8138c2a5130b"/>
+				<textFieldExpression><![CDATA[$V{cantidad_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="428" y="31" width="100" height="20" uuid="a4d3a4e3-a629-400b-a9b9-0c2f75c30310"/>
+				<textFieldExpression><![CDATA[$V{total_producto_2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,5 +1,15 @@
 package productoBO;
 
+import conversores.ProductoConversor;
+import dtos.ProductoDTO;
+import entidades.CategoriaProducto;
+import entidades.Producto;
+import excepciones.PersistenciaException;
+import java.util.ArrayList;
+import java.util.List;
+import persistencia.CategoriaProductoDAO;
+import persistencia.ProductoDAO;
+
 /**
  *
  * Clase con los metodos necesarios para Gestionar el producto
@@ -11,5 +21,71 @@ package productoBO;
  * @author Adán Eduardo Cornejo Balcázar 000000228558
  */
 public class ProductoBO {
-    
+
+    private final ProductoDAO productoDAO;
+    private final ProductoConversor productoConversor;
+    private final CategoriaProductoDAO categoriaDAO = new CategoriaProductoDAO();
+
+    public ProductoBO() {
+        this.productoDAO = new ProductoDAO();
+        this.productoConversor = new ProductoConversor();
+    }
+
+    public List<ProductoDTO> encontrarTodo() {
+        List<Producto> productosEntity = productoDAO.encontrarTodos();
+        List<ProductoDTO> productosDTO = new ArrayList<>();
+
+        for (Producto productoEntity : productosEntity) {
+            productosDTO.add(productoConversor.entityADto(productoEntity));
+        }
+
+        return productosDTO;
+    }
+
+    public void crearProducto(ProductoDTO dto) throws PersistenciaException {
+        if (dto == null || dto.getNombre() == null || dto.getNombre().isBlank()
+                || dto.getMarca() == null || dto.getMarca().isBlank()) {
+            throw new PersistenciaException("Campos vacíos no permitidos");
+        }
+
+        Producto producto = productoConversor.DtoAEntity(dto);
+        productoDAO.guardar(producto);
+    }
+
+    public void editarProducto(ProductoDTO dto) throws PersistenciaException {
+        if (dto == null || dto.getId() == null) {
+            throw new PersistenciaException("ID inválido para edición");
+        }
+
+        Producto producto = productoConversor.DtoAEntity(dto);
+        productoDAO.editar(producto);
+    }
+
+    public void eliminarProducto(Long id) throws PersistenciaException {
+        if (id == null) {
+            throw new PersistenciaException("ID requerido para eliminar producto");
+        }
+
+        Producto producto = productoDAO.encontrarPorId(id);
+        if (producto == null) {
+            throw new PersistenciaException("Producto no encontrado con ID: " + id);
+        }
+
+        productoDAO.eliminar(producto);
+    }
+
+    public String obtenerNombreCategoriaPorId(Long categoriaId) throws PersistenciaException {
+        if (categoriaId == null) {
+            throw new PersistenciaException("ID de categoría no puede ser null");
+        }
+
+        CategoriaProducto categoria = categoriaDAO.encontrarPorId(categoriaId);
+
+        if (categoria == null) {
+            throw new PersistenciaException("Categoría no encontrada para ID: " + categoriaId);
+        }
+
+        return categoria.getNombre();
+    }
+
 }

@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import net.sf.jasperreports.engine.JasperReport;
 import reporteBO.RepoVentasBO;
 
 /**
@@ -105,34 +106,38 @@ public class JReportes extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRepoVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepoVentasActionPerformed
-        RepoVentasBO bo = new RepoVentasBO();
-        try {
-            List<RepoVentasDTO> reporte = bo.obtenerReporteDelDia();
+//        RepoVentasBO bo = new RepoVentasBO();
+//        try {
+//            List<RepoVentasDTO> reporte = bo.obtenerReporteDelDia();
+//
+//            // Ruta y nombre del archivo
+//            String rutaArchivo = "reporte_ventas.txt";
+//
+//            try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo))) {
+//                writer.write("=== REPORTE DE VENTAS ===\n");
+//                writer.write("Fecha de generación: " + java.time.LocalDate.now() + "\n\n");
+//
+//                for (RepoVentasDTO dto : reporte) {
+//                    writer.write("Producto: " + dto.getNombreProducto() + "\n");
+//                    writer.write("Cantidad Vendida: " + dto.getCantidadVendida() + "\n");
+//                    writer.write("Total Ganado: $" + dto.getTotalGanancias() + "\n");
+//                    writer.write("------------------------------------\n");
+//                }
+//
+//                javax.swing.JOptionPane.showMessageDialog(this, "Reporte generado con éxito en:\n" + rutaArchivo);
+//            } catch (IOException e) {
+//                javax.swing.JOptionPane.showMessageDialog(this, "Error al escribir el archivo: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+//                e.printStackTrace(); // Imprimir error de escritura
+//            }
+//
+//        } catch (PersistenciaException e) {
+//            javax.swing.JOptionPane.showMessageDialog(this, "Error al obtener reporte: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+//            e.printStackTrace(); // Esto imprimirá el error completo en la consola
+//        }
 
-            // Ruta y nombre del archivo
-            String rutaArchivo = "reporte_ventas.txt";
+            JasperReport reporte = null;
+            
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo))) {
-                writer.write("=== REPORTE DE VENTAS ===\n");
-                writer.write("Fecha de generación: " + java.time.LocalDate.now() + "\n\n");
-
-                for (RepoVentasDTO dto : reporte) {
-                    writer.write("Producto: " + dto.getNombreProducto() + "\n");
-                    writer.write("Cantidad Vendida: " + dto.getCantidadVendida() + "\n");
-                    writer.write("Total Ganado: $" + dto.getTotalGanancias() + "\n");
-                    writer.write("------------------------------------\n");
-                }
-
-                javax.swing.JOptionPane.showMessageDialog(this, "Reporte generado con éxito en:\n" + rutaArchivo);
-            } catch (IOException e) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error al escribir el archivo: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace(); // Imprimir error de escritura
-            }
-
-        } catch (PersistenciaException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error al obtener reporte: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace(); // Esto imprimirá el error completo en la consola
-        }
     }//GEN-LAST:event_btnRepoVentasActionPerformed
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
