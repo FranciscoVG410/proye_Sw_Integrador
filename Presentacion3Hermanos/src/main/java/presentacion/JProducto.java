@@ -10,8 +10,11 @@ import excepciones.PersistenciaException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import persistencia.CategoriaProductoDAO;
@@ -25,38 +28,38 @@ import utilerias.JButtonRenderer;
  */
 public class JProducto extends javax.swing.JDialog {
 
-    private ProductoBO productoBO;
+    private final ProductoBO productoBO = new ProductoBO();
+    private List<ProductoDTO> productos;
 
     public JProducto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setResizable(false);
-        this.productoBO = new ProductoBO();
-        cargarProductos();
         cargarConfiguracionInicialTabla();
+        cargarProductos();
     }
 
     private void cargarProductos() {
-        try {
-            List<ProductoDTO> productos = productoBO.encontrarTodo();
-            DefaultTableModel modelo = (DefaultTableModel) tblProductos.getModel();
-            modelo.setRowCount(0);
-
-            for (ProductoDTO p : productos) {
-                String categoriaNombre = productoBO.obtenerNombreCategoriaPorId(p.getCategoriaId());
-                modelo.addRow(new Object[]{
-                    p.getNombre(),
-                    "$" + p.getPrecioVenta(),
-                    p.getMarca(),
-                    categoriaNombre,
-                    new JButton("Editar"),
-                    new JButton("Eliminar")
-                });
+        productos = productoBO.encontrarTodo();
+        DefaultTableModel model = (DefaultTableModel) tblProductos.getModel();
+        model.setRowCount(0);
+        for (ProductoDTO p : productos) {
+            String categoria = "";
+            try {
+                categoria = new persistencia.CategoriaProductoDAO().encontrarPorId(p.getCategoriaId()).getNombre();
+            } catch (PersistenciaException ex) {
+                Logger.getLogger(JProducto.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (PersistenciaException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar productos: " + ex.getMessage());
+            model.addRow(new Object[]{
+                p.getNombre(),
+                "$ " + p.getPrecioVenta(),
+                p.getMarca(),
+                categoria,
+                "Editar", // texto, no botón
+                "Eliminar" // texto, no botón
+            });
         }
+
     }
 
     private void cargarConfiguracionInicialTabla() {
@@ -67,11 +70,6 @@ public class JProducto extends javax.swing.JDialog {
             }
         };
 
-        int indiceColumnaEditar = 4;
-        TableColumnModel modeloColumnas = this.tblProductos.getColumnModel();
-        modeloColumnas.getColumn(indiceColumnaEditar).setCellRenderer(new JButtonRenderer("Editar"));
-        modeloColumnas.getColumn(indiceColumnaEditar).setCellEditor(new JButtonCellEditor("Editar", onEditarClickListener));
-
         ActionListener onEliminarClickListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -79,37 +77,42 @@ public class JProducto extends javax.swing.JDialog {
             }
         };
 
-        int indiceColumnaEliminar = 5;
-        modeloColumnas.getColumn(indiceColumnaEliminar).setCellRenderer(new JButtonRenderer("Eliminar"));
-        modeloColumnas.getColumn(indiceColumnaEliminar).setCellEditor(new JButtonCellEditor("Eliminar", onEliminarClickListener));
+        TableColumnModel modeloColumnas = this.tblProductos.getColumnModel();
+        modeloColumnas.getColumn(4).setCellRenderer(new JButtonRenderer("Editar"));
+        modeloColumnas.getColumn(4).setCellEditor(new JButtonCellEditor("Editar", onEditarClickListener));
+
+        modeloColumnas.getColumn(5).setCellRenderer(new JButtonRenderer("Eliminar"));
+        modeloColumnas.getColumn(5).setCellEditor(new JButtonCellEditor("Eliminar", onEliminarClickListener));
     }
 
     private void editar() {
-        int fila = tblProductos.getSelectedRow();
-        if (fila != -1) {
-            String nombreProducto = tblProductos.getValueAt(fila, 0).toString();
-            JOptionPane.showMessageDialog(this, "Editar: " + nombreProducto);
+        int filaSeleccionada = tblProductos.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            ProductoDTO productoSeleccionado = productos.get(filaSeleccionada);
+            JEditarProductoExistente editarProducto = new JEditarProductoExistente((java.awt.Frame) SwingUtilities.getWindowAncestor(this), true, productoSeleccionado);
+            editarProducto.setVisible(true);
+            cargarProductos();
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para editar.");
         }
     }
 
     private void eliminar() {
-        int fila = tblProductos.getSelectedRow();
-        if (fila != -1) {
-            String nombreProducto = tblProductos.getValueAt(fila, 0).toString();
-            int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar el producto '" + nombreProducto + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                try {
-                    List<ProductoDTO> productos = productoBO.encontrarTodo();
-                    for (ProductoDTO p : productos) {
-                        if (p.getNombre().equals(nombreProducto)) {
-                            productoBO.eliminarProducto(p.getId());
-                            cargarProductos();
-                            break;
-                        }
-                    }
-                } catch (PersistenciaException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al eliminar producto: " + ex.getMessage());
-                }
+        int row = tblProductos.getSelectedRow();
+        if (row == -1) {
+            return;
+        }
+
+        ProductoDTO dto = productos.get(row);
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar producto '" + dto.getNombre() + "'?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                productoBO.eliminarProducto(dto.getId());
+                JOptionPane.showMessageDialog(this, "Producto eliminado");
+                cargarProductos();
+            } catch (PersistenciaException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -155,7 +158,7 @@ public class JProducto extends javax.swing.JDialog {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -265,16 +268,15 @@ public class JProducto extends javax.swing.JDialog {
         JVenta jVenta = new JVenta();
         jVenta.setVisible(true);
         this.dispose();
-        
+
     }//GEN-LAST:event_btnAtrasActionPerformed
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
         // TODO add your handling code here:
-        JCrearProducto jCrearProducto = new JCrearProducto(null, true);
+        JCrearProducto jCrearProducto = new JCrearProducto((java.awt.Frame) this.getParent(), true);
         jCrearProducto.setVisible(true);
-        this.dispose();
+        cargarProductos();
     }//GEN-LAST:event_btnCrearActionPerformed
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -4,18 +4,70 @@
  */
 package presentacion;
 
+import dtos.ProductoDTO;
+import entidades.CategoriaProducto;
+import excepciones.PersistenciaException;
+import java.util.List;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import persistencia.CategoriaProductoDAO;
+import productoBO.ProductoBO;
+
 /**
  *
  * @author eduar
  */
 public class JCrearProducto extends javax.swing.JDialog {
 
-    /**
-     * Creates new form JEditarProductoExistente
-     */
+    private final ProductoBO productoBO = new ProductoBO();
+    private List<CategoriaProducto> categorias;
+
     public JCrearProducto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setLocationRelativeTo(null);
+        cargarCategorias();
+        configurarEventos();
+    }
+
+    private void cargarCategorias() {
+        categorias = new CategoriaProductoDAO().encontrarTodos();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (CategoriaProducto categoria : categorias) {
+            model.addElement(categoria.getNombre());
+        }
+        cbcCategoria.setModel(model);
+    }
+
+    private void configurarEventos() {
+        btnCancelar.addActionListener(e -> this.dispose());
+
+        btnContinuar.addActionListener(e -> {
+            String nombre = txtNombre.getText();
+            String marca = txtMarca.getText();
+            String precioStr = txtPrecio.getText();
+            int index = cbcCategoria.getSelectedIndex();
+
+            if (nombre.isBlank() || marca.isBlank() || precioStr.isBlank() || index == -1) {
+                JOptionPane.showMessageDialog(this, "Por favor completa todos los campos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            try {
+                double precio = Double.parseDouble(precioStr);
+                Long categoriaId = categorias.get(index).getId();
+
+                ProductoDTO dto = new ProductoDTO(nombre, precio, 0, marca, categoriaId);
+                productoBO.crearProducto(dto);
+
+                JOptionPane.showMessageDialog(this, "Producto creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Precio inválido", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (PersistenciaException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     /**

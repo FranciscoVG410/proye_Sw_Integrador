@@ -4,18 +4,82 @@
  */
 package presentacion;
 
+import dtos.ProductoDTO;
+import entidades.CategoriaProducto;
+import excepciones.PersistenciaException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import javax.swing.JOptionPane;
+import persistencia.CategoriaProductoDAO;
+import productoBO.ProductoBO;
+
 /**
  *
  * @author eduar
  */
 public class JEditarProductoExistente extends javax.swing.JDialog {
+    
+    private final ProductoBO productoBO = new ProductoBO();
+    private ProductoDTO producto;
+    private List<CategoriaProducto> categorias;
 
-    /**
-     * Creates new form JEditarProductoExistente
-     */
-    public JEditarProductoExistente(java.awt.Frame parent, boolean modal) {
+    public JEditarProductoExistente(java.awt.Frame parent, boolean modal, ProductoDTO producto) {
         super(parent, modal);
+        this.producto = producto;
         initComponents();
+        cargarCategorias();
+        cargarDatos();
+        configurarEventos();
+    }
+
+    private void cargarCategorias() {
+        try {
+            CategoriaProductoDAO categoriaDAO = new CategoriaProductoDAO();
+            categorias = categoriaDAO.encontrarTodos();
+            for (CategoriaProducto categoria : categorias) {
+                cbcCategoria.addItem(categoria.getNombre());
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error cargando categorías: " + ex.getMessage());
+        }
+    }
+
+    private void cargarDatos() {
+        txtNombre.setText(producto.getNombre());
+        txtMarca.setText(producto.getMarca());
+        txtPrecio.setText(producto.getPrecioVenta().toString());
+
+        for (int i = 0; i < categorias.size(); i++) {
+            if (categorias.get(i).getId().equals(producto.getCategoriaId())) {
+                cbcCategoria.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
+
+    private void configurarEventos() {
+        btnCancelar.addActionListener(e -> dispose());
+
+        btnContinuar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    producto.setNombre(txtNombre.getText());
+                    producto.setMarca(txtMarca.getText());
+                    producto.setPrecioVenta(Double.parseDouble(txtPrecio.getText()));
+                    producto.setCategoriaId(categorias.get(cbcCategoria.getSelectedIndex()).getId());
+
+                    productoBO.editarProducto(producto);
+                    JOptionPane.showMessageDialog(null, "Producto actualizado con éxito.");
+                    dispose();
+                } catch (PersistenciaException ex) {
+                    JOptionPane.showMessageDialog(null, "Error actualizando producto: " + ex.getMessage());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Precio inválido, ingrese un número.");
+                }
+            }
+        });
     }
 
     /**
