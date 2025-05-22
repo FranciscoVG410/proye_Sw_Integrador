@@ -881,7 +881,11 @@ public class JVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_tableProductosMouseClicked
 
     private void btnProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductoActionPerformed
-        // TODO add your handling code here:
+        
+        this.dispose();
+        JProducto jproducto = new JProducto(this, true);
+        jproducto.setVisible(true);
+        
     }//GEN-LAST:event_btnProductoActionPerformed
 
     public void limpiarPrecioAgregarProducto() {

@@ -1,6 +1,7 @@
 package conversores;
 
 import dtos.ProductoDTO;
+import entidades.CategoriaProducto;
 import entidades.Producto;
 import excepciones.PersistenciaException;
 import java.util.List;

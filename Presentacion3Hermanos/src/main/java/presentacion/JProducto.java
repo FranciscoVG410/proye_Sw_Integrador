@@ -4,18 +4,114 @@
  */
 package presentacion;
 
+import dtos.ProductoDTO;
+import entidades.CategoriaProducto;
+import excepciones.PersistenciaException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import persistencia.CategoriaProductoDAO;
+import productoBO.ProductoBO;
+import utilerias.JButtonCellEditor;
+import utilerias.JButtonRenderer;
+
 /**
  *
  * @author eduar
  */
 public class JProducto extends javax.swing.JDialog {
 
-    /**
-     * Creates new form JProducto
-     */
+    private ProductoBO productoBO;
+
     public JProducto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setResizable(false);
+        this.productoBO = new ProductoBO();
+        cargarProductos();
+        cargarConfiguracionInicialTabla();
+    }
+
+    private void cargarProductos() {
+        try {
+            List<ProductoDTO> productos = productoBO.encontrarTodo();
+            DefaultTableModel modelo = (DefaultTableModel) tblProductos.getModel();
+            modelo.setRowCount(0);
+
+            for (ProductoDTO p : productos) {
+                String categoriaNombre = productoBO.obtenerNombreCategoriaPorId(p.getCategoriaId());
+                modelo.addRow(new Object[]{
+                    p.getNombre(),
+                    "$" + p.getPrecioVenta(),
+                    p.getMarca(),
+                    categoriaNombre,
+                    new JButton("Editar"),
+                    new JButton("Eliminar")
+                });
+            }
+        } catch (PersistenciaException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar productos: " + ex.getMessage());
+        }
+    }
+
+    private void cargarConfiguracionInicialTabla() {
+        ActionListener onEditarClickListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editar();
+            }
+        };
+
+        int indiceColumnaEditar = 4;
+        TableColumnModel modeloColumnas = this.tblProductos.getColumnModel();
+        modeloColumnas.getColumn(indiceColumnaEditar).setCellRenderer(new JButtonRenderer("Editar"));
+        modeloColumnas.getColumn(indiceColumnaEditar).setCellEditor(new JButtonCellEditor("Editar", onEditarClickListener));
+
+        ActionListener onEliminarClickListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                eliminar();
+            }
+        };
+
+        int indiceColumnaEliminar = 5;
+        modeloColumnas.getColumn(indiceColumnaEliminar).setCellRenderer(new JButtonRenderer("Eliminar"));
+        modeloColumnas.getColumn(indiceColumnaEliminar).setCellEditor(new JButtonCellEditor("Eliminar", onEliminarClickListener));
+    }
+
+    private void editar() {
+        int fila = tblProductos.getSelectedRow();
+        if (fila != -1) {
+            String nombreProducto = tblProductos.getValueAt(fila, 0).toString();
+            JOptionPane.showMessageDialog(this, "Editar: " + nombreProducto);
+        }
+    }
+
+    private void eliminar() {
+        int fila = tblProductos.getSelectedRow();
+        if (fila != -1) {
+            String nombreProducto = tblProductos.getValueAt(fila, 0).toString();
+            int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar el producto '" + nombreProducto + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    List<ProductoDTO> productos = productoBO.encontrarTodo();
+                    for (ProductoDTO p : productos) {
+                        if (p.getNombre().equals(nombreProducto)) {
+                            productoBO.eliminarProducto(p.getId());
+                            cargarProductos();
+                            break;
+                        }
+                    }
+                } catch (PersistenciaException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar producto: " + ex.getMessage());
+                }
+            }
+        }
     }
 
     /**
@@ -31,7 +127,7 @@ public class JProducto extends javax.swing.JDialog {
         jProductos = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblProductos = new javax.swing.JTable();
         btnAtras = new javax.swing.JButton();
         btnCrear = new javax.swing.JButton();
         btnCategorias = new javax.swing.JButton();
@@ -47,34 +143,44 @@ public class JProducto extends javax.swing.JDialog {
 
         jPanel2.setBackground(new java.awt.Color(153, 204, 255));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Nombre", "Precio", "Marca", "Categoria", "", "", ""
+                "Nombre", "Precio", "Marca", "Categoria", "", ""
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblProductos);
 
         btnAtras.setBackground(new java.awt.Color(255, 0, 51));
         btnAtras.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btnAtras.setText("Atrás");
+        btnAtras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAtrasActionPerformed(evt);
+            }
+        });
 
         btnCrear.setBackground(new java.awt.Color(102, 255, 102));
         btnCrear.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btnCrear.setText("Crear");
+        btnCrear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -104,6 +210,7 @@ public class JProducto extends javax.swing.JDialog {
         );
 
         btnCategorias.setBackground(new java.awt.Color(255, 51, 51));
+        btnCategorias.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         btnCategorias.setText("Categorias");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -113,8 +220,8 @@ public class JProducto extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jProductos)
-                .addGap(341, 341, 341)
-                .addComponent(btnCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(245, 245, 245)
+                .addComponent(btnCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(67, 67, 67))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(42, 42, 42)
@@ -125,9 +232,9 @@ public class JProducto extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jProductos))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jProductos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCategorias, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -153,47 +260,22 @@ public class JProducto extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
+        // TODO add your handling code here:
+        JVenta jVenta = new JVenta();
+        jVenta.setVisible(true);
+        this.dispose();
+        
+    }//GEN-LAST:event_btnAtrasActionPerformed
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                JProducto dialog = new JProducto(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+    private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
+        // TODO add your handling code here:
+        JCrearProducto jCrearProducto = new JCrearProducto(null, true);
+        jCrearProducto.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCrearActionPerformed
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;
@@ -203,6 +285,6 @@ public class JProducto extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel jProductos;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblProductos;
     // End of variables declaration//GEN-END:variables
 }
