@@ -4,19 +4,53 @@
  */
 package presentacion;
 
+import categoriaBO.CategoriaBO;
+import entidades.CategoriaProducto;
+import excepciones.PersistenciaException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author eduar
  */
 public class JEditarCategoria extends javax.swing.JDialog {
 
-    /**
-     * Creates new form JAgregarCategoria
-     */
-    public JEditarCategoria(java.awt.Frame parent, boolean modal) {
+    private final CategoriaProducto categoria;
+    
+    private final CategoriaBO categoriaBO = new CategoriaBO();
+
+    public JEditarCategoria(java.awt.Frame parent, boolean modal, CategoriaProducto categoria) {
         super(parent, modal);
+        this.categoria = categoria;
         initComponents();
+        this.setLocationRelativeTo(null);
+        txtCategoria.setText(categoria.getNombre());
+        configurarEventos();
     }
+
+    private void configurarEventos() {
+        btnCancelar.addActionListener(e -> this.dispose());
+
+        btnAgregar.addActionListener(e -> {
+            String nuevoNombre = txtCategoria.getText().trim();
+            if (nuevoNombre.isBlank()) {
+                JOptionPane.showMessageDialog(this, "Nombre no puede estar vacío", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            try {
+                CategoriaProducto editada = new CategoriaProducto();
+                editada.setId(categoria.getId());
+                editada.setNombre(nuevoNombre);
+
+                categoriaBO.editarCategoria(editada);
+                JOptionPane.showMessageDialog(this, "Categoría editada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            } catch (PersistenciaException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -163,7 +197,6 @@ public class JEditarCategoria extends javax.swing.JDialog {
     private void txtCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCategoriaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCategoriaActionPerformed
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

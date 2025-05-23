@@ -4,6 +4,10 @@
  */
 package presentacion;
 
+import categoriaBO.CategoriaBO;
+import excepciones.PersistenciaException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author eduar
@@ -16,7 +20,33 @@ public class JAgregarCategoria extends javax.swing.JDialog {
     public JAgregarCategoria(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setLocationRelativeTo(null);
+        configurarEventos();
+
     }
+    
+    private void configurarEventos() {
+    btnCancelar.addActionListener(e -> this.dispose());
+
+    btnAgregar.addActionListener(e -> {
+        String nombreCategoria = txtCategoria.getText().trim();
+
+        if (nombreCategoria.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            CategoriaBO bo = new CategoriaBO();
+            bo.crearCategoria(nombreCategoria);
+            JOptionPane.showMessageDialog(this, "Categoría agregada exitosamente");
+            this.dispose();
+        } catch (PersistenciaException ex) {
+            JOptionPane.showMessageDialog(this, "Error al agregar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -163,7 +193,6 @@ public class JAgregarCategoria extends javax.swing.JDialog {
     private void txtCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCategoriaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCategoriaActionPerformed
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
