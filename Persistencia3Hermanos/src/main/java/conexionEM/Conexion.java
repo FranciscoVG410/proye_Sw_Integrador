@@ -27,4 +27,11 @@ public class Conexion implements IConexion{
         EntityManager em = emf.createEntityManager();
         return em;
     }
+    
+    public static void cerrarFactory() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionPU");
+        if (emf.isOpen()) {
+            emf.close();
+        }
+    }
 }
