@@ -267,10 +267,6 @@ public class JReportes extends javax.swing.JFrame {
             JasperViewer viewer = new JasperViewer(jasperPrint, false);
             viewer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             viewer.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    new JReportes().setVisible(true);
-                }
             });
             viewer.setVisible(true);
 
