@@ -4,11 +4,21 @@
  */
 package presentacion;
 
+import categoriaBO.CategoriaBO;
+import entidades.CategoriaProducto;
+import excepciones.PersistenciaException;
+import java.util.List;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author eduar
  */
 public class JCategorias extends javax.swing.JDialog {
+
+    private final CategoriaBO categoriaBO = new CategoriaBO();
+    private List<CategoriaProducto> categorias;
 
     /**
      * Creates new form JCategorias
@@ -16,6 +26,28 @@ public class JCategorias extends javax.swing.JDialog {
     public JCategorias(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setLocationRelativeTo(null);
+        cargarCategorias();
+        configurarEventos();
+    }
+
+    private void cargarCategorias() {
+        categorias = categoriaBO.obtenerTodasCategorias();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (CategoriaProducto cat : categorias) {
+            model.addElement(cat.getNombre());
+        }
+        cbcCategorias.setModel(model);
+    }
+
+    private void configurarEventos() {
+        btnAtras.addActionListener(e -> this.dispose());
+
+        btnAgregar.addActionListener(e -> {
+            JAgregarCategoria agregar = new JAgregarCategoria((java.awt.Frame) this.getParent(), true);
+            agregar.setVisible(true);
+            cargarCategorias();
+        });
     }
 
     /**
@@ -32,9 +64,9 @@ public class JCategorias extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         cbcCategorias = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnEditarCategoria = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        btnAgregar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         btnAtras = new javax.swing.JButton();
 
@@ -53,17 +85,32 @@ public class JCategorias extends javax.swing.JDialog {
 
         cbcCategorias.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
 
-        jButton1.setBackground(new java.awt.Color(228, 223, 68));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jButton1.setText("Editar Categoria");
+        btnEditarCategoria.setBackground(new java.awt.Color(228, 223, 68));
+        btnEditarCategoria.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        btnEditarCategoria.setText("Editar Categoria");
+        btnEditarCategoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarCategoriaActionPerformed(evt);
+            }
+        });
 
-        jButton4.setBackground(new java.awt.Color(247, 94, 94));
-        jButton4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jButton4.setText("Eliminar Categoria");
+        btnEliminar.setBackground(new java.awt.Color(247, 94, 94));
+        btnEliminar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        btnEliminar.setText("Eliminar Categoria");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
-        jButton5.setBackground(new java.awt.Color(174, 228, 68));
-        jButton5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jButton5.setText("Agregar Nueva");
+        btnAgregar.setBackground(new java.awt.Color(174, 228, 68));
+        btnAgregar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        btnAgregar.setText("Agregar Nueva");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -81,13 +128,13 @@ public class JCategorias extends javax.swing.JDialog {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(146, 146, 146)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton4)
+                    .addComponent(btnEliminar)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(13, 13, 13)
-                        .addComponent(jButton1))
+                        .addComponent(btnEditarCategoria))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jButton5)))
+                        .addComponent(btnAgregar)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -98,11 +145,11 @@ public class JCategorias extends javax.swing.JDialog {
                 .addGap(35, 35, 35)
                 .addComponent(cbcCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnEditarCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -181,15 +228,53 @@ public class JCategorias extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnEditarCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarCategoriaActionPerformed
+        // TODO add your handling code here:
+        int index = cbcCategorias.getSelectedIndex();
+        if (index == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una categoría", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        CategoriaProducto seleccionada = categorias.get(index);
+        JEditarCategoria editar = new JEditarCategoria((java.awt.Frame) this.getParent(), true, seleccionada);
+        editar.setVisible(true);
+        cargarCategorias();
+    }//GEN-LAST:event_btnEditarCategoriaActionPerformed
 
-    
-        
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        // TODO add your handling code here:
+        int index = cbcCategorias.getSelectedIndex();
+        if (index == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una categoría", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        CategoriaProducto seleccionada = categorias.get(index);
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar la categoría '" + seleccionada.getNombre() + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                categoriaBO.eliminarCategoria(seleccionada.getId());
+                JOptionPane.showMessageDialog(this, "Categoría eliminada correctamente");
+                cargarCategorias();
+            } catch (PersistenciaException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        // TODO add your handling code here:
+        JAgregarCategoria agregarCategoria = new JAgregarCategoria((java.awt.Frame) this.getParent(), true);
+        agregarCategoria.setVisible(true);
+        cargarCategorias();
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnAtras;
+    private javax.swing.JButton btnEditarCategoria;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JComboBox<String> cbcCategorias;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

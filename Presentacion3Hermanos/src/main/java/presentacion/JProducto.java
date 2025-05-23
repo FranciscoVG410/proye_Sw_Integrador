@@ -215,6 +215,11 @@ public class JProducto extends javax.swing.JDialog {
         btnCategorias.setBackground(new java.awt.Color(255, 51, 51));
         btnCategorias.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         btnCategorias.setText("Categorias");
+        btnCategorias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCategoriasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -277,6 +282,12 @@ public class JProducto extends javax.swing.JDialog {
         jCrearProducto.setVisible(true);
         cargarProductos();
     }//GEN-LAST:event_btnCrearActionPerformed
+
+    private void btnCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoriasActionPerformed
+        // TODO add your handling code here:
+        JCategorias jCategorias = new JCategorias((java.awt.Frame) this.getParent(), true);
+        jCategorias.setVisible(true);
+    }//GEN-LAST:event_btnCategoriasActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
