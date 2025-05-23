@@ -21,8 +21,8 @@ public class CategoriaBO {
         this.categoriaDAO = new CategoriaProductoDAO();
     }
 
-    public List<CategoriaProducto> obtenerTodasCategorias() {
-        return categoriaDAO.encontrarTodos();
+    public List<CategoriaProducto> obtenerTodasCategorias() throws PersistenciaException {
+        return categoriaDAO.encontrarActivas();
     }
 
     public CategoriaProducto obtenerPorId(Long id) throws PersistenciaException {
@@ -52,11 +52,7 @@ public class CategoriaBO {
         if (id == null) {
             throw new PersistenciaException("ID requerido para eliminar");
         }
-        CategoriaProducto existente = categoriaDAO.encontrarPorId(id);
-        if (existente == null) {
-            throw new PersistenciaException("No existe categoría con ID: " + id);
-        }
-        categoriaDAO.eliminar(existente);
+        categoriaDAO.eliminarLogico(id);
     }
     
 }

@@ -8,6 +8,8 @@ import categoriaBO.CategoriaBO;
 import entidades.CategoriaProducto;
 import excepciones.PersistenciaException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
@@ -32,7 +34,11 @@ public class JCategorias extends javax.swing.JDialog {
     }
 
     private void cargarCategorias() {
-        categorias = categoriaBO.obtenerTodasCategorias();
+        try {
+            categorias = categoriaBO.obtenerTodasCategorias();
+        } catch (PersistenciaException ex) {
+            Logger.getLogger(JCategorias.class.getName()).log(Level.SEVERE, null, ex);
+        }
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         for (CategoriaProducto cat : categorias) {
             model.addElement(cat.getNombre());

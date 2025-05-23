@@ -7,6 +7,8 @@ import entidades.Producto;
 import excepciones.PersistenciaException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import persistencia.CategoriaProductoDAO;
 import persistencia.ProductoDAO;
 
@@ -32,7 +34,12 @@ public class ProductoBO {
     }
 
     public List<ProductoDTO> encontrarTodo() {
-        List<Producto> productosEntity = productoDAO.encontrarTodos();
+        List<Producto> productosEntity = null;
+        try {
+            productosEntity = productoDAO.encontrarActivos();
+        } catch (PersistenciaException ex) {
+            Logger.getLogger(ProductoBO.class.getName()).log(Level.SEVERE, null, ex);
+        }
         List<ProductoDTO> productosDTO = new ArrayList<>();
 
         for (Producto productoEntity : productosEntity) {
@@ -65,13 +72,7 @@ public class ProductoBO {
         if (id == null) {
             throw new PersistenciaException("ID requerido para eliminar producto");
         }
-
-        Producto producto = productoDAO.encontrarPorId(id);
-        if (producto == null) {
-            throw new PersistenciaException("Producto no encontrado con ID: " + id);
-        }
-
-        productoDAO.eliminar(producto);
+        productoDAO.eliminarLogico(id);
     }
 
     public String obtenerNombreCategoriaPorId(Long categoriaId) throws PersistenciaException {

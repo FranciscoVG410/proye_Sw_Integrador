@@ -4,6 +4,7 @@
  */
 package presentacion;
 
+import categoriaBO.CategoriaBO;
 import dtos.ProductoDTO;
 import entidades.CategoriaProducto;
 import excepciones.PersistenciaException;
@@ -21,6 +22,7 @@ import productoBO.ProductoBO;
 public class JEditarProductoExistente extends javax.swing.JDialog {
     
     private final ProductoBO productoBO = new ProductoBO();
+    private final CategoriaBO categoriaBO = new CategoriaBO();
     private ProductoDTO producto;
     private List<CategoriaProducto> categorias;
 
@@ -35,8 +37,7 @@ public class JEditarProductoExistente extends javax.swing.JDialog {
 
     private void cargarCategorias() {
         try {
-            CategoriaProductoDAO categoriaDAO = new CategoriaProductoDAO();
-            categorias = categoriaDAO.encontrarTodos();
+            categorias = categoriaBO.obtenerTodasCategorias();
             for (CategoriaProducto categoria : categorias) {
                 cbcCategoria.addItem(categoria.getNombre());
             }
