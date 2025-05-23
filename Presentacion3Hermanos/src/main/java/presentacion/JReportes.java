@@ -4,14 +4,42 @@
  */
 package presentacion;
 
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import java.sql.Connection;
+import conexionEM.Conexion;
 import dtos.RepoVentasDTO;
 import excepciones.PersistenciaException;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.swing.JOptionPane;
+import reportes.Templates;
+import static net.sf.dynamicreports.report.builder.DynamicReports.report;
+import net.sf.dynamicreports.report.builder.column.Columns;
+import net.sf.dynamicreports.report.builder.component.Components;
+import net.sf.dynamicreports.report.builder.datatype.DataTypes;
+import net.sf.dynamicreports.report.constant.Calculation;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import reporteBO.RepoVentasBO;
+import reportes.CustomExpression;
 
 /**
  *
@@ -135,8 +163,70 @@ public class JReportes extends javax.swing.JFrame {
 //            e.printStackTrace(); // Esto imprimirá el error completo en la consola
 //        }
 
-            JasperReport reporte = null;
-            
+        try {
+            Conexion conexion = new Conexion();
+            EntityManager em = conexion.abrir();
+
+            // Usar unwrap para obtener Connection a partir de EntityManager
+            JpaEntityManager jpaEm = em.unwrap(JpaEntityManager.class);
+            org.eclipse.persistence.sessions.Session session = jpaEm.getActiveSession();
+            Connection conn = (Connection) ((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl) session).getAccessor().getConnection();
+
+            String sql = """
+            SELECT 
+                p.nombre AS producto,
+                pt.cantidad,
+                pt.precio,
+                (pt.cantidad * pt.precio) AS total_producto
+            FROM 
+                productotransacciones pt
+            JOIN 
+                productos p ON pt.producto_id = p.ID
+            JOIN 
+                transacciones t ON pt.transaccion_id = t.ID
+            JOIN 
+                venta v ON t.ID = v.ID
+            WHERE 
+                DATE(pt.fecha_hora) = CURRENT_DATE
+        """;
+
+            JRDataSource dataSource = new JRResultSetDataSource(conn.createStatement().executeQuery(sql));
+
+            report()
+                    .title(
+                            Components.text("ABARROTES 3 HERMANOS").setStyle(Templates.bold18CenteredStyle),
+                            Components.text("Reporte de ventas").setStyle(Templates.bold12CenteredStyle),
+                            Components.text("Fecha: " + java.time.LocalDate.now()).setStyle(Templates.rootStyle)
+                    )
+                    .setColumnTitleStyle(Templates.bold12CenteredStyle)
+                    .columns(
+                            Columns.column("Producto", "producto", DataTypes.stringType()).setStyle(Templates.rootStyle),
+                            Columns.column("Cantidad", "cantidad", DataTypes.integerType()).setStyle(Templates.rootStyle),
+                            Columns.column("Precio Unitario", "precio", DataTypes.doubleType()).setStyle(Templates.rootStyle),
+                            Columns.column("Total", "total_producto", DataTypes.doubleType()).setStyle(Templates.rootStyle)
+                    )
+                    .summary(
+                            Components.text("Resumen del día").setStyle(Templates.bold12CenteredStyle),
+                            Components.horizontalList(
+                                    Components.text("Total de Productos: "),
+                                    Components.text(new CustomExpression<Integer>("cantidad", true, Calculation.SUM))
+                            ),
+                            Components.horizontalList(
+                                    Components.text("Total Ganado: $"),
+                                    Components.text(new CustomExpression<Double>("total_producto", true, Calculation.SUM))
+                            )
+                    )
+                    .pageFooter(Components.pageXofY())
+                    .setDataSource(dataSource)
+                    .show();
+
+            em.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al generar el reporte: " + e.getMessage());
+        }
+
 
     }//GEN-LAST:event_btnRepoVentasActionPerformed
 

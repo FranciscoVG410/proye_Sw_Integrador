@@ -62,6 +62,12 @@
             <artifactId>groovy-all</artifactId>
             <version>2.4.21</version>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.dynamicreports</groupId>
+            <artifactId>dynamicreports-core</artifactId>
+            <version>6.20.1</version>
+        </dependency>
+
 
     </dependencies>
     <properties>
