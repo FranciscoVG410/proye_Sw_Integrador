@@ -5,6 +5,8 @@
 package presentacion;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
+import static net.sf.dynamicreports.report.builder.DynamicReports.*;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
@@ -12,6 +14,8 @@ import java.sql.Connection;
 import conexionEM.Conexion;
 import dtos.RepoVentasDTO;
 import excepciones.PersistenciaException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -22,13 +26,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import static net.sf.dynamicreports.report.builder.DynamicReports.col;
 import reportes.Templates;
 import static net.sf.dynamicreports.report.builder.DynamicReports.report;
+import net.sf.dynamicreports.report.builder.VariableBuilder;
 import net.sf.dynamicreports.report.builder.column.Columns;
+import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
 import net.sf.dynamicreports.report.builder.component.Components;
 import net.sf.dynamicreports.report.builder.datatype.DataTypes;
 import net.sf.dynamicreports.report.constant.Calculation;
+import net.sf.dynamicreports.report.constant.HorizontalTextAlignment;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRResultSetDataSource;
@@ -37,6 +46,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import reporteBO.RepoVentasBO;
 import reportes.CustomExpression;
@@ -175,9 +185,9 @@ public class JReportes extends javax.swing.JFrame {
             String sql = """
             SELECT 
                 p.nombre AS producto,
-                pt.cantidad,
+                SUM(pt.cantidad) AS cantidad,
                 pt.precio,
-                (pt.cantidad * pt.precio) AS total_producto
+                SUM(pt.cantidad * pt.precio) AS total_producto
             FROM 
                 productotransacciones pt
             JOIN 
@@ -188,37 +198,81 @@ public class JReportes extends javax.swing.JFrame {
                 venta v ON t.ID = v.ID
             WHERE 
                 DATE(pt.fecha_hora) = CURRENT_DATE
+            GROUP BY 
+                p.nombre, pt.precio
         """;
 
             JRDataSource dataSource = new JRResultSetDataSource(conn.createStatement().executeQuery(sql));
 
-            report()
+            TextColumnBuilder<String> colProducto = col.column("Producto", "producto", type.stringType());
+            TextColumnBuilder<Integer> colCantidad = col.column("Cantidad", "cantidad", type.integerType());
+            TextColumnBuilder<Double> colPrecio = col.column("Precio Unitario", "precio", type.doubleType());
+            TextColumnBuilder<Double> colTotal = col.column("Total", "total_producto", type.doubleType());
+
+            VariableBuilder<Integer> varCantidadSum = variable(colCantidad, Calculation.SUM);
+            VariableBuilder<Double> varTotalSum = variable(colTotal, Calculation.SUM);
+
+            JasperPrint jasperPrint = report()
                     .title(
                             Components.text("ABARROTES 3 HERMANOS").setStyle(Templates.bold18CenteredStyle),
                             Components.text("Reporte de ventas").setStyle(Templates.bold12CenteredStyle),
                             Components.text("Fecha: " + java.time.LocalDate.now()).setStyle(Templates.rootStyle)
                     )
                     .setColumnTitleStyle(Templates.bold12CenteredStyle)
+                    
                     .columns(
-                            Columns.column("Producto", "producto", DataTypes.stringType()).setStyle(Templates.rootStyle),
-                            Columns.column("Cantidad", "cantidad", DataTypes.integerType()).setStyle(Templates.rootStyle),
-                            Columns.column("Precio Unitario", "precio", DataTypes.doubleType()).setStyle(Templates.rootStyle),
-                            Columns.column("Total", "total_producto", DataTypes.doubleType()).setStyle(Templates.rootStyle)
+                            Columns.column("Producto", "producto", DataTypes.stringType())
+                                    .setStyle(Templates.rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER),
+                            Columns.column("Cantidad", "cantidad", DataTypes.integerType())
+                                    .setStyle(Templates.rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER),
+                            Columns.column("Precio Unitario", "precio", DataTypes.doubleType())
+                                    .setStyle(Templates.rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER),
+                            Columns.column("Total", "total_producto", DataTypes.doubleType())
+                                    .setStyle(Templates.rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
                     )
                     .summary(
-                            Components.text("Resumen del día").setStyle(Templates.bold12CenteredStyle),
+                            
+                            Components.line(),
+                            Components.text("Resumen del día")
+                                    .setStyle(Templates.bold12CenteredStyle)
+                                    .setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT),
+                            // Primera fila: total de productos
                             Components.horizontalList(
-                                    Components.text("Total de Productos: "),
-                                    Components.text(new CustomExpression<Integer>("cantidad", true, Calculation.SUM))
+                                    Components.text("Total de Productos:")
+                                            .setStyle(Templates.rootStyle)
+                                            .setHorizontalTextAlignment(HorizontalTextAlignment.LEFT)
+                                            .setFixedWidth(400),
+                                    Components.text(varCantidadSum)
+                                            .setStyle(Templates.rootStyle)
+                                            .setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT)
+                                            .setPattern("#,##0")
+                            ).newRow(),
+                            // Segunda fila: total ganado
+                            Components.horizontalList(
+                                    Components.text("Total Ganado: $")
+                                            .setStyle(Templates.rootStyle)
+                                            .setHorizontalTextAlignment(HorizontalTextAlignment.LEFT)
+                                            .setFixedWidth(400),
+                                    Components.text(varTotalSum)
+                                            .setStyle(Templates.rootStyle)
+                                            .setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT)
+                                            .setPattern("#,##0.00")
                             ),
-                            Components.horizontalList(
-                                    Components.text("Total Ganado: $"),
-                                    Components.text(new CustomExpression<Double>("total_producto", true, Calculation.SUM))
-                            )
+                            Components.line()
                     )
                     .pageFooter(Components.pageXofY())
                     .setDataSource(dataSource)
-                    .show();
+                    .toJasperPrint();
+
+            JasperViewer viewer = new JasperViewer(jasperPrint, false);
+            viewer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            viewer.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    new JReportes().setVisible(true);
+                }
+            });
+            viewer.setVisible(true);
 
             em.close();
 
